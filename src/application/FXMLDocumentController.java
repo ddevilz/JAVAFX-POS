@@ -73,8 +73,8 @@ public class FXMLDocumentController implements Initializable{
                     Stage stage = new Stage();
                     Scene scene = new Scene(root);
                     
-                    stage.setMinWidth(1100);
-                    stage.setMinHeight(600);
+                    stage.setMinWidth(1280);
+                    stage.setMinHeight(750);
                     
                     stage.setTitle("Laundry Shop Management System");
                     

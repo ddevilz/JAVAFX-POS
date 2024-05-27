@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="laundryshopmanagementsystem.mainFormController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21"  >
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
@@ -16,36 +16,36 @@
                <left>
                   <AnchorPane prefHeight="750.0" prefWidth="256.0" BorderPane.alignment="CENTER">
                      <children>
-                        <AnchorPane prefHeight="750.0" prefWidth="256.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane prefHeight="750.0" prefWidth="256.0" styleClass="nav" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="42.0" layoutY="14.0" prefHeight="81.0" prefWidth="256.0" AnchorPane.bottomAnchor="669.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <Label alignment="CENTER" layoutX="29.0" layoutY="19.0" prefHeight="44.0" prefWidth="199.0" text="Laundry Shop">
+                                    <Label alignment="CENTER" layoutX="29.0" layoutY="19.0" prefHeight="44.0" prefWidth="199.0" styleClass="header" text="Laundry Shop" textFill="WHITE">
                                        <font>
                                           <Font size="24.0" />
                                        </font>
                                     </Label>
                                  </children>
                               </AnchorPane>
-                              <Label alignment="CENTER" layoutX="52.0" layoutY="110.0" prefHeight="31.0" prefWidth="152.0" text="Welcome, Admin" />
-                              <Button layoutX="29.0" layoutY="212.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" text="Dashboard">
+                              <Label alignment="CENTER" layoutX="52.0" layoutY="110.0" prefHeight="31.0" prefWidth="152.0" text="Welcome, Admin" textFill="#fcfcfc" />
+                              <Button layoutX="29.0" layoutY="212.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="Dashboard">
                                  <graphic>
                                     <FontAwesomeIcon glyphName="DASHBOARD" size="1.5em" />
                                  </graphic>
                               </Button>
-                              <Button layoutX="29.0" layoutY="273.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" text="Take a order">
+                              <Button layoutX="29.0" layoutY="273.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="Take a order">
                                  <graphic>
-                                    <FontAwesomeIcon glyphName="SHOPPING_CART" size="1.5em" />
+                                    <FontAwesomeIcon glyphName="SHOPPING_CART" size="1.5em" text="" />
                                  </graphic>
                               </Button>
-                              <Button layoutX="29.0" layoutY="334.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" text="View order detail">
+                              <Button layoutX="29.0" layoutY="334.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="View order detail">
                                  <graphic>
-                                    <FontAwesomeIcon glyphName="CUPBOARD" text="" />
+                                    <FontAwesomeIcon glyphName="CLIPBOARD" size="1.5em" text="" />
                                  </graphic>
                               </Button>
-                              <Button layoutX="29.0" layoutY="393.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" text="Order details">
+                              <Button layoutX="29.0" layoutY="393.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="Order details">
                                  <graphic>
-                                    <FontAwesomeIcon />
+                                    <FontAwesomeIcon glyphName="USERS" size="1.5em" text="" />
                                  </graphic>
                               </Button>
                            </children>
