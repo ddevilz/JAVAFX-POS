@@ -70,7 +70,13 @@ public class mainFormController implements Initializable {
 
     @FXML
     private AnchorPane take_a_order;
+    
+    @FXML
+    private AnchorPane order_status;
 
+    @FXML
+    private Button order_status_btn;
+    
     @FXML
     private AnchorPane view_order_detail;
 
@@ -129,17 +135,25 @@ public class mainFormController implements Initializable {
             dashboard_page.setVisible(true);
             take_a_order.setVisible(false);
             view_order_detail.setVisible(false);
+            order_status.setVisible(false);
         } else if (event.getSource() == order_btn) {
             System.out.println("Switching to take order page.");
             dashboard_page.setVisible(false);
             take_a_order.setVisible(true);
             view_order_detail.setVisible(false);
+            order_status.setVisible(false);
         } else if (event.getSource() == order_detail_btn) {
             System.out.println("Switching to view order detail page.");
             dashboard_page.setVisible(false);
             take_a_order.setVisible(false);
             view_order_detail.setVisible(true);
-        }
+            order_status.setVisible(false);
+        } else if (event.getSource() == order_status_btn) {
+        	dashboard_page.setVisible(false);
+            take_a_order.setVisible(false);
+            view_order_detail.setVisible(false);
+            order_status.setVisible(true);
+		}
     }
 
     public void numOnChange(KeyEvent event) {

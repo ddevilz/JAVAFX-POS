@@ -53,11 +53,6 @@
                                     <FontAwesomeIcon glyphName="USERS" size="1.5em" text="" />
                                  </graphic>
                               </Button>
-                              <Button layoutX="29.0" layoutY="451.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="Order Status">
-                                 <graphic>
-                                    <FontAwesomeIcon glyphName="USERS" size="1.5em" text="" />
-                                 </graphic>
-                              </Button>
                            </children>
                         </AnchorPane>
                      </children>
@@ -155,7 +150,7 @@
                                           <TextField fx:id="customerAddress" layoutX="98.0" layoutY="15.0" prefHeight="25.0" prefWidth="488.0" promptText="Address" />
                                        </children>
                                     </AnchorPane>
-                                     <TableView fx:id="resultsTable" layoutX="14.0" layoutY="200.0" prefHeight="300.0" prefWidth="600.0">
+                                     <TableView fx:id="resultsTable" layoutX="47.0" layoutY="187.0" prefHeight="94.0" prefWidth="599.0">
 		                              <columns>
 		                                 <TableColumn fx:id="nameColumn" prefWidth="200.0" text="Name" />
 		                                 <TableColumn fx:id="addressColumn" prefWidth="200.0" text="Address" />
@@ -236,7 +231,7 @@
 						        </AnchorPane>
 						    </children>
 						</AnchorPane>
-						<AnchorPane layoutY="3.0" prefHeight="753.0" prefWidth="1035.0" styleClass="ordertable" stylesheets="@mainFormDesign.css">
+						<AnchorPane fx:id="order_status" layoutY="3.0" prefHeight="753.0" prefWidth="1035.0" styleClass="ordertable" stylesheets="@mainFormDesign.css" visible="false">
 						    <children>  
 						        <TableView editable="true" layoutX="24.0" layoutY="109.0" prefHeight="414.0" prefWidth="973.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="228.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="109.0">
 						            <columns>
@@ -253,16 +248,8 @@
 						                <Font size="34.0" />
 						            </font>
 						        </Label>
-						        <TextField layoutX="74.0" layoutY="563.0" promptText="hello">
-						            <font>
-						                <Font size="41.0" />
-						            </font>
-						        </TextField>
 						    </children>
 						</AnchorPane>
-                        
-                        
-                        <AnchorPane fx:id="view_order_detail" prefHeight="750.0" prefWidth="1024.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </StackPane>
                </center>
@@ -271,4 +258,3 @@
       </AnchorPane>
    </children>
 </StackPane>
-
