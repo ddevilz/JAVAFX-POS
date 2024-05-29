@@ -2,6 +2,7 @@
 
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
 <?import java.lang.String?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -60,7 +61,7 @@
                   </AnchorPane>
                </left>
                <center>
-                  <StackPane>
+                  <StackPane stylesheets="@mainFormDesign.css">
                      <children>
                         <AnchorPane fx:id="dashboard_page" prefHeight="750.0" prefWidth="1024.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
@@ -88,7 +89,7 @@
                                     </AnchorPane>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane prefHeight="479.0" prefWidth="992.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="247.0">
+                              <AnchorPane prefHeight="479.0" prefWidth="992.0" stylesheets="@mainFormDesign.css" visible="false" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="247.0">
                                  <styleClass>
                                     <String fx:value="radius" />
                                     <String fx:value="shadow" />
@@ -197,21 +198,21 @@
                            </styleClass>
                         </AnchorPane>
                         
-                        <AnchorPane fx:id="view_order_detail" prefHeight="750.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="view_order_detail" prefHeight="750.0" prefWidth="1024.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <Text layoutX="465.0" layoutY="371.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Order Detail Page" wrappingWidth="94.1484375" />
                            </children>
 						</AnchorPane>
-						<AnchorPane fx:id="order_status" layoutY="3.0" prefHeight="753.0" prefWidth="1035.0" styleClass="ordertable" stylesheets="@mainFormDesign.css" visible="false">
+						<AnchorPane fx:id="order_status" layoutY="3.0" prefHeight="753.0" prefWidth="1035.0" styleClass="ordertable">
 						    <children>  
-						        <TableView editable="true" layoutX="24.0" layoutY="109.0" prefHeight="414.0" prefWidth="973.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="228.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="109.0">
+						        <TableView fx:id="orderTable" editable="true" layoutX="24.0" layoutY="109.0" prefHeight="414.0" prefWidth="973.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="228.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="109.0">
 						            <columns>
-						                <TableColumn prefWidth="119.73336791992188" text="Order Number" />
-						                <TableColumn prefWidth="137.33322143554688" text="Due Date" />
-						                <TableColumn prefWidth="155.46661376953125" text="Due Time" />
-						                <TableColumn prefWidth="227.73333740234375" text="Customer" />
-						                <TableColumn prefWidth="177.066650390625" text="Total Quantity" />
-						                <TableColumn prefWidth="163.4666748046875" text="Order Status" />
+						                <TableColumn fx:id="orderNumberColumn" prefWidth="119.73336791992188" styleClass="center" text="Order Number" />
+						                <TableColumn fx:id="dueDateColumn" prefWidth="137.33322143554688" styleClass="center" text="Due Date" />
+						                <TableColumn fx:id="dueTimeColumn" prefWidth="155.46661376953125" styleClass="center" text="Due Time" />
+						                <TableColumn fx:id="customerColumn" prefWidth="227.73333740234375" styleClass="center" text="Customer" />
+						                <TableColumn fx:id="totalQuantityColumn" prefWidth="177.066650390625" styleClass="center" text="Total Quantity" />
+						                <TableColumn fx:id="orderStatusColumn" prefWidth="163.4666748046875" styleClass="center" text="Order Status" />
 						            </columns>
 						        </TableView>
 						        <Label layoutX="29.0" layoutY="36.0" prefHeight="46.0" prefWidth="235.0" styleClass="orderStatus" stylesheets="@mainFormDesign.css" text=" Order Status" textFill="#eae6e6">
@@ -220,6 +221,9 @@
 						            </font>
 						        </Label>
 						    </children>
+                           <stylesheets>
+                              <URL value="@mainFormDesign.css" />
+                           </stylesheets>
 						</AnchorPane>
                      </children>
                   </StackPane>

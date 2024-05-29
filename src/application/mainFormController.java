@@ -7,13 +7,15 @@ import javafx.fxml.Initializable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.*;
- import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.ComboBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
  import javafx.scene.input.KeyCode;
  import javafx.scene.input.KeyEvent;
  import javafx.scene.layout.AnchorPane;
@@ -35,6 +37,9 @@ public class mainFormController implements Initializable {
     
     @FXML
     private TableView<Order> orderTable;
+//    
+//    @FXML
+//    private TableColumn<Order, Integer> orderIdColumn;
 
     @FXML
     private TableColumn<Order, String> orderNumberColumn;
@@ -51,8 +56,10 @@ public class mainFormController implements Initializable {
     @FXML
     private TableColumn<Order, Integer> totalQuantityColumn;
 
+    
     @FXML
-    private TableColumn<Order, String> orderStatusColumn;
+    private TableColumn<Order, OrderStatus> orderStatusColumn;
+
 
     private OrderDAO orderDAO = new OrderDAO();
 
@@ -126,6 +133,8 @@ public class mainFormController implements Initializable {
 
         // Set up key listener for phoneNum TextField
         phoneNum.setOnKeyReleased(this::numOnChange);
+        
+        initializeOrderTable();
     }
 
     public void switchForm(ActionEvent event) {
@@ -248,21 +257,90 @@ public class mainFormController implements Initializable {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setContentText(content);
-        alert.showAndWait();
+//        alert.showAndWait();
     }
-    
-    @FXML
-    public void initializeOrder() {
+//    private void initializeOrderTable() {
+//        orderNumberColumn.setCellValueFactory(new PropertyValueFactory<>("orderNumber"));
+//        dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+//        dueTimeColumn.setCellValueFactory(new PropertyValueFactory<>("dueTime"));
+//        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
+//        totalQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
+//        orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+//
+//        ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
+//        
+//        orderTable.setItems(orders);
+//    }
+    private void updateOrderStatusInDatabase(Order order) {
+        // Assuming you have a connection to your database
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Prepare the update query
+            String updateQuery = "UPDATE orders SET orderStatus = ? WHERE orderNumber = ?";
+            
+            // Create a prepared statement
+            preparedStatement = connection.prepareStatement(updateQuery);
+            
+            // Set the parameters
+            preparedStatement.setString(1, order.getOrderStatus().toString());
+            preparedStatement.setInt(2, order.getOrderNumber());
+            
+            // Execute the update
+            int rowsAffected = preparedStatement.executeUpdate();
+            
+            // Check if the update was successful
+            if (rowsAffected > 0) {
+                System.out.println("Order status updated successfully.");
+            } else {
+                System.out.println("Failed to update order status.");
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Exception: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing PreparedStatement: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    private void initializeOrderTable() {
         orderNumberColumn.setCellValueFactory(new PropertyValueFactory<>("orderNumber"));
         dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
         dueTimeColumn.setCellValueFactory(new PropertyValueFactory<>("dueTime"));
         customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
         totalQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
+        
+        // Set cell value factory for orderStatusColumn
         orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+        
+        // Set up the orderStatusColumn with a ComboBoxTableCell
+        orderStatusColumn.setCellFactory(ComboBoxTableCell.forTableColumn(OrderStatus.values()));
 
+
+        // Add a listener to handle the edit commit event when user selects an option
+        orderStatusColumn.setOnEditCommit(event -> {
+            TablePosition<Order, OrderStatus> position = event.getTablePosition();
+            Order order = event.getTableView().getItems().get(position.getRow());
+            OrderStatus newStatusValue = (OrderStatus) event.getNewValue();
+            order.setOrderStatus(newStatusValue);
+
+            // Now you can update the database with the new order status
+            updateOrderStatusInDatabase(order);
+        });
+
+        // Load orders from the database and set them to the table
         ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
         orderTable.setItems(orders);
     }
+
 
     public void printCard(ActionEvent event) {
         System.out.println("Printing card...");

@@ -4,6 +4,10 @@
 }
 .ordertable{
     -fx-background-color: linear-gradient(to bottom right, #e0f7fa, #80deea);
+      
+}
+.center {
+    -fx-alignment: CENTER;  
 }
 .nav-btn{
     -fx-background-color: transparent;
