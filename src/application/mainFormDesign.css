@@ -2,7 +2,9 @@
 .nav{
     -fx-background-color: linear-gradient(to bottom right, #4694bb, #2a5178);
 }
-
+.ordertable{
+    -fx-background-color: linear-gradient(to bottom right, #e0f7fa, #80deea);
+}
 .nav-btn{
     -fx-background-color: transparent;
     -fx-border-color: #fff;
@@ -21,6 +23,12 @@
     -fx-background-color: #2a5178;
     -fx-border-width: 0 0 2px 0;
     -fx-border-color: #fff;
+}
+.orderStatus{
+    -fx-background-color: #2a5178;
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-radius: 10px;  
+    -fx-background-radius: 10px;
 }
 
 .shadow{

@@ -4,9 +4,12 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.Initializable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 
 import java.sql.*;
@@ -21,6 +24,29 @@ public class mainFormController implements Initializable {
 
     @FXML
     private TextField customerAddress;
+    
+    @FXML
+    private TableView<Order> orderTable;
+
+    @FXML
+    private TableColumn<Order, String> orderNumberColumn;
+
+    @FXML
+    private TableColumn<Order, String> dueDateColumn;
+
+    @FXML
+    private TableColumn<Order, String> dueTimeColumn;
+
+    @FXML
+    private TableColumn<Order, String> customerColumn;
+
+    @FXML
+    private TableColumn<Order, Integer> totalQuantityColumn;
+
+    @FXML
+    private TableColumn<Order, String> orderStatusColumn;
+
+    private OrderDAO orderDAO = new OrderDAO();
 
     private Connection connection;
 
@@ -80,12 +106,26 @@ public class mainFormController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
+    
+    @FXML
+    public void initializeOrder() {
+        orderNumberColumn.setCellValueFactory(new PropertyValueFactory<>("orderNumber"));
+        dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        dueTimeColumn.setCellValueFactory(new PropertyValueFactory<>("dueTime"));
+        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
+        totalQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
+        orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+
+        ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
+        orderTable.setItems(orders);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         phoneNum.setEditable(true);
         customerName.setEditable(true);
         customerAddress.setEditable(true);
+        initializeOrder();
     }
 }
 

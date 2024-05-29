@@ -17,7 +17,7 @@
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <BorderPane layoutX="35.0" layoutY="102.0" prefHeight="750.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <BorderPane layoutX="35.0" layoutY="102.0" prefHeight="760.8" prefWidth="1290.4" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <left>
                   <AnchorPane prefHeight="750.0" prefWidth="256.0" BorderPane.alignment="CENTER">
                      <children>
@@ -53,6 +53,11 @@
                                     <FontAwesomeIcon glyphName="USERS" size="1.5em" text="" />
                                  </graphic>
                               </Button>
+                              <Button layoutX="29.0" layoutY="451.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="Order Status">
+                                 <graphic>
+                                    <FontAwesomeIcon glyphName="USERS" size="1.5em" text="" />
+                                 </graphic>
+                              </Button>
                            </children>
                         </AnchorPane>
                      </children>
@@ -61,9 +66,9 @@
                <center>
                   <AnchorPane cache="true" mouseTransparent="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <children>
-                        <AnchorPane fx:id="take_a_order" prefHeight="750.0" prefWidth="1024.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="take_a_order" prefHeight="750.0" prefWidth="1024.0" stylesheets="@mainFormDesign.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <AnchorPane layoutX="14.0" layoutY="236.0" prefHeight="501.0" prefWidth="691.0" stylesheets="@mainFormDesign.css">
+                              <AnchorPane layoutX="14.0" layoutY="236.0" prefHeight="501.0" prefWidth="691.0" stylesheets="@mainFormDesign.css" visible="false">
                                  <styleClass>
                                     <String fx:value="shadow" />
                                     <String fx:value="radius" />
@@ -199,6 +204,30 @@
                                     <String fx:value="white-form" />
                                  </styleClass>
                               </AnchorPane>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutY="3.0" prefHeight="753.0" prefWidth="1035.0" styleClass="ordertable" stylesheets="@mainFormDesign.css">
+                           <children>  // haa to merge kr dena okay
+                              <TableView editable="true" layoutX="24.0" layoutY="109.0" prefHeight="414.0" prefWidth="973.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="228.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="109.0">
+                                <columns>
+                                  <TableColumn prefWidth="119.73336791992188" text="Order Number" />
+                                  <TableColumn prefWidth="137.33322143554688" text="Due Date" />
+                                    <TableColumn prefWidth="155.46661376953125" text="Due Time" />
+                                    <TableColumn prefWidth="227.73333740234375" text="Customer" />
+                                    <TableColumn prefWidth="177.066650390625" text="Total Quantity" />
+                                    <TableColumn prefWidth="163.4666748046875" text="Order Status" />
+                                </columns>
+                              </TableView>
+                              <Label layoutX="29.0" layoutY="36.0" prefHeight="46.0" prefWidth="235.0" styleClass="orderStatus" stylesheets="@mainFormDesign.css" text=" Order Status" textFill="#eae6e6">
+                                 <font>
+                                    <Font size="34.0" />
+                                 </font>
+                              </Label>
+                              <TextField layoutX="74.0" layoutY="563.0" promptText="hello">
+                                 <font>
+                                    <Font size="41.0" />
+                                 </font>
+                              </TextField>
                            </children>
                         </AnchorPane>
                      </children></AnchorPane>
