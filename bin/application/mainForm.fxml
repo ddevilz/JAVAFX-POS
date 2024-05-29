@@ -207,7 +207,7 @@
                            </children>
                         </AnchorPane>
                         <AnchorPane layoutY="3.0" prefHeight="753.0" prefWidth="1035.0" styleClass="ordertable" stylesheets="@mainFormDesign.css">
-                           <children>  // haa to merge kr dena okay
+                           <children>  
                               <TableView editable="true" layoutX="24.0" layoutY="109.0" prefHeight="414.0" prefWidth="973.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="228.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="109.0">
                                 <columns>
                                   <TableColumn prefWidth="119.73336791992188" text="Order Number" />
