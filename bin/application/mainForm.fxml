@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.mainFormController">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
@@ -48,7 +48,7 @@
                                     <FontAwesomeIcon glyphName="CLIPBOARD" size="1.5em" text="" />
                                  </graphic>
                               </Button>
-                              <Button layoutX="29.0" layoutY="393.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="Order details">
+                              <Button layoutX="29.0" layoutY="393.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="199.0" styleClass="nav-btn" text="Order status">
                                  <graphic>
                                     <FontAwesomeIcon glyphName="USERS" size="1.5em" text="" />
                                  </graphic>
@@ -61,42 +61,7 @@
                <center>
                   <AnchorPane cache="true" mouseTransparent="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <children>
-                        <AnchorPane prefHeight="750.0" prefWidth="1024.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <AnchorPane prefHeight="200.0" prefWidth="992.0" stylesheets="@mainFormDesign.css" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="14.0">
-                                 <styleClass>
-                                    <String fx:value="radius" />
-                                    <String fx:value="shadow" />
-                                    <String fx:value="white-form" />
-                                 </styleClass>
-                                 <children>
-                                    <AnchorPane layoutX="24.0" prefHeight="200.0" prefWidth="992.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                          <ScrollPane layoutX="9.0" layoutY="6.0" prefHeight="186.0" prefWidth="976.0">
-                                            <content>
-                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="971.0">
-                                                   <children>
-                                                      <AnchorPane layoutX="14.0" layoutY="9.0" prefHeight="162.0" prefWidth="294.0" styleClass="top-card" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="663.0" AnchorPane.topAnchor="9.0" />
-                                                      <AnchorPane layoutX="331.0" layoutY="9.0" prefHeight="162.0" prefWidth="294.0" styleClass="top-card" />
-                                                      <AnchorPane layoutX="651.0" layoutY="9.0" prefHeight="162.0" prefWidth="294.0" styleClass="top-card" />
-                                                   </children>
-                                                </AnchorPane>
-                                            </content>
-                                          </ScrollPane>
-                                       </children>
-                                    </AnchorPane>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane prefHeight="479.0" prefWidth="992.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="247.0">
-                                 <styleClass>
-                                    <String fx:value="radius" />
-                                    <String fx:value="shadow" />
-                                    <String fx:value="white-form" />
-                                 </styleClass>
-                              </AnchorPane>
-                           </children>
-                        </AnchorPane>
-                        <AnchorPane prefHeight="750.0" prefWidth="1024.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="take_a_order" prefHeight="750.0" prefWidth="1024.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="14.0" layoutY="236.0" prefHeight="501.0" prefWidth="691.0" stylesheets="@mainFormDesign.css">
                                  <styleClass>
@@ -131,7 +96,7 @@
                                        </styleClass>
                                        <children>
                                           <Label layoutX="20.0" layoutY="17.0" text="Phone no." />
-                                          <TextField layoutX="101.0" layoutY="13.0" prefHeight="25.0" prefWidth="175.0" promptText="7894561230" />
+                                          <TextField fx:id="phoneNum" layoutX="101.0" layoutY="13.0" onAction="#numOnChange" onKeyPressed="#numOnChange" prefHeight="25.0" prefWidth="175.0" promptText="7894561230" />
                                        </children>
                                     </AnchorPane>
                                     <AnchorPane layoutX="361.0" layoutY="61.0" prefHeight="50.0" prefWidth="300.0" stylesheets="@mainFormDesign.css">
@@ -142,7 +107,7 @@
                                        </styleClass>
                                        <children>
                                           <Label layoutX="26.0" layoutY="16.0" text="Name" />
-                                          <TextField layoutX="82.0" layoutY="12.0" prefHeight="25.0" prefWidth="174.0" promptText="Name" />
+                                          <TextField fx:id="customerName" layoutX="82.0" layoutY="12.0" prefHeight="25.0" prefWidth="174.0" promptText="Name" />
                                        </children>
                                     </AnchorPane>
                                     <AnchorPane layoutX="33.0" layoutY="126.0" prefHeight="61.0" prefWidth="630.0" stylesheets="@mainFormDesign.css">
@@ -153,7 +118,7 @@
                                        </styleClass>
                                        <children>
                                           <Label alignment="CENTER" layoutX="15.0" layoutY="7.0" prefHeight="41.0" prefWidth="66.0" text="Address" />
-                                          <TextField layoutX="98.0" layoutY="15.0" prefHeight="25.0" prefWidth="488.0" promptText="Address" />
+                                          <TextField fx:id="customerAddress" layoutX="98.0" layoutY="15.0" prefHeight="25.0" prefWidth="488.0" promptText="Address" />
                                        </children>
                                     </AnchorPane>
                                  </children>
@@ -200,6 +165,41 @@
                               <String fx:value="white-form" />
                               <String fx:value="radius" />
                            </styleClass>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="750.0" prefWidth="1024.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <AnchorPane prefHeight="200.0" prefWidth="992.0" stylesheets="@mainFormDesign.css" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="14.0">
+                                 <styleClass>
+                                    <String fx:value="radius" />
+                                    <String fx:value="shadow" />
+                                    <String fx:value="white-form" />
+                                 </styleClass>
+                                 <children>
+                                    <AnchorPane layoutX="24.0" prefHeight="200.0" prefWidth="992.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <ScrollPane layoutX="9.0" layoutY="6.0" prefHeight="186.0" prefWidth="976.0">
+                                            <content>
+                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="971.0">
+                                                   <children>
+                                                      <AnchorPane layoutX="14.0" layoutY="9.0" prefHeight="162.0" prefWidth="294.0" styleClass="top-card" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="663.0" AnchorPane.topAnchor="9.0" />
+                                                      <AnchorPane layoutX="331.0" layoutY="9.0" prefHeight="162.0" prefWidth="294.0" styleClass="top-card" />
+                                                      <AnchorPane layoutX="651.0" layoutY="9.0" prefHeight="162.0" prefWidth="294.0" styleClass="top-card" />
+                                                   </children>
+                                                </AnchorPane>
+                                            </content>
+                                          </ScrollPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane prefHeight="479.0" prefWidth="992.0" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="247.0">
+                                 <styleClass>
+                                    <String fx:value="radius" />
+                                    <String fx:value="shadow" />
+                                    <String fx:value="white-form" />
+                                 </styleClass>
+                              </AnchorPane>
+                           </children>
                         </AnchorPane>
                      </children></AnchorPane>
                </center>
