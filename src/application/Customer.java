@@ -11,7 +11,12 @@ public class Customer {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getName() {
+    public Customer(String name, String address) {
+    	this.name = name;
+        this.address = address;
+	}
+
+	public String getName() {
         return name;
     }
 

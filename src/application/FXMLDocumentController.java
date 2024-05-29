@@ -13,7 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -33,12 +33,16 @@ public class FXMLDocumentController implements Initializable{
 
 	@FXML
 	private TextField username;
+	
+	
     
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
     
     private Alert alert;
+    
+    
     
     
     public void loginAccount(){
