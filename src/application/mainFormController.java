@@ -22,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class mainFormController implements Initializable {
@@ -55,11 +56,9 @@ public class mainFormController implements Initializable {
 
     @FXML
     private TableColumn<Order, Integer> totalQuantityColumn;
-
     
     @FXML
     private TableColumn<Order, OrderStatus> orderStatusColumn;
-
 
     private OrderDAO orderDAO = new OrderDAO();
 
@@ -98,6 +97,9 @@ public class mainFormController implements Initializable {
 
     @FXML
     private TableColumn<Customer, String> phoneColumn;
+    
+    @FXML
+    private DatePicker datePicker;
 
     private Connection connection;
 
@@ -135,7 +137,49 @@ public class mainFormController implements Initializable {
         phoneNum.setOnKeyReleased(this::numOnChange);
         
         initializeOrderTable();
+        
+        datePicker.setOnAction(event -> {
+            LocalDate selectedDate = datePicker.getValue();
+            if (selectedDate != null) {
+                fetchOrdersForDate(selectedDate);
+            }
+        });
+       
+        
     }
+    
+    
+    private void fetchOrdersForDate(LocalDate date) {
+        orderTable.getItems().clear();
+
+        String query = "SELECT * FROM orders WHERE DueDate = ?";
+
+        try (Connection connection = Database.connectDB();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setDate(1, java.sql.Date.valueOf(date));
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ObservableList<Order> orders = FXCollections.observableArrayList();
+            while (resultSet.next()) {
+                int orderNumber = resultSet.getInt("orderNumber");
+                String dueDateString = resultSet.getString("DueDate");
+                LocalDate dueDate = LocalDate.parse(dueDateString);
+                String dueTime = resultSet.getTime("DueTime").toString();
+                String customer = resultSet.getString("Customer");
+                int totalQuantity = resultSet.getInt("totalQuantity");
+                String orderStatus = resultSet.getString("orderStatus");
+
+                Order order = new Order(orderNumber, dueDate, dueTime, customer, totalQuantity, OrderStatus.valueOf(orderStatus));
+                orders.add(order);
+            }
+            orderTable.setItems(orders);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Failed to fetch orders for the selected date.");
+        }
+    }
+
 
     public void switchForm(ActionEvent event) {
         System.out.println("Switching forms...");

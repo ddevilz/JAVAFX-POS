@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +23,11 @@ public class OrderDAO {
 
                while (rs.next()) {
                    int orderNumber = rs.getInt("orderNumber");
-                   String dueDate = rs.getString("DueDate");
+                   String dueDateString = rs.getString("DueDate");
+                   LocalDate dueDate = LocalDate.parse(dueDateString); 
                    String dueTime = rs.getString("DueTime");
                    String customer = rs.getString("Customer");
                    int totalQuantity = rs.getInt("totalQuantity");
-//                   OrderStatus orderStatus = OrderStatus.valueOf(rs.getString("orderStatus"));
                    String statusFromDatabase = rs.getString("orderStatus");
                    OrderStatus orderStatus = OrderStatus.valueOf(statusFromDatabase.toUpperCase());
 

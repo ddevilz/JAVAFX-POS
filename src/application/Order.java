@@ -1,15 +1,16 @@
 package application;
 
+import java.time.LocalDate;
 
 public class Order {
     private int orderNumber;
-    private String dueDate;
+    private LocalDate dueDate;
     private String dueTime;
     private String customer;
     private int totalQuantity;
     private OrderStatus orderStatus;
     
-	public Order(int orderNumber, String dueDate, String dueTime, String customer, int totalQuantity,
+	public Order(int orderNumber, LocalDate dueDate, String dueTime, String customer, int totalQuantity,
 			OrderStatus orderStatus) {
 		this.orderNumber = orderNumber;
 		this.dueDate = dueDate;
@@ -18,16 +19,17 @@ public class Order {
 		this.totalQuantity = totalQuantity;
 		this.orderStatus = orderStatus;
 	}
+	
 	public int getOrderNumber() {
 		return orderNumber;
 	}
 	public void setOrderNumber(int orderNumber) {
 		this.orderNumber = orderNumber;
 	}
-	public String getDueDate() {
+	public LocalDate getDueDate() {
 		return dueDate;
 	}
-	public void setDueDate(String dueDate) {
+	public void setDueDate(LocalDate dueDate) {
 		this.dueDate = dueDate;
 	}
 	public String getDueTime() {
