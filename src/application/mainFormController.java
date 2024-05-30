@@ -100,6 +100,9 @@ public class mainFormController implements Initializable {
     
     @FXML
     private DatePicker datePicker;
+    
+    @FXML
+    private Button resetButton;
 
     private Connection connection;
 
@@ -137,6 +140,8 @@ public class mainFormController implements Initializable {
         phoneNum.setOnKeyReleased(this::numOnChange);
         
         initializeOrderTable();
+
+        resetDatePicker();
         
         datePicker.setOnAction(event -> {
             LocalDate selectedDate = datePicker.getValue();
@@ -148,6 +153,17 @@ public class mainFormController implements Initializable {
         
     }
     
+    @FXML
+    private void resetDatePicker() {
+        datePicker.setValue(null);
+        loadAllOrders();
+    }
+
+    private void loadAllOrders() {
+        orderTable.getItems().clear();
+        ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
+        orderTable.setItems(orders);
+    }
     
     private void fetchOrdersForDate(LocalDate date) {
         orderTable.getItems().clear();
@@ -364,10 +380,10 @@ public class mainFormController implements Initializable {
         
         // Set cell value factory for orderStatusColumn
         orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
-        
+        System.out.println("hello");
         // Set up the orderStatusColumn with a ComboBoxTableCell
         orderStatusColumn.setCellFactory(ComboBoxTableCell.forTableColumn(OrderStatus.values()));
-
+        System.out.println("hello");
 
         // Add a listener to handle the edit commit event when user selects an option
         orderStatusColumn.setOnEditCommit(event -> {
@@ -379,7 +395,7 @@ public class mainFormController implements Initializable {
             // Now you can update the database with the new order status
             updateOrderStatusInDatabase(order);
         });
-
+        System.out.println("hello");
         // Load orders from the database and set them to the table
         ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
         orderTable.setItems(orders);
