@@ -2,12 +2,10 @@ package application;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
+import java.util.UUID;
 import javafx.fxml.Initializable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import javafx.event.ActionEvent;
@@ -20,10 +18,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
  import javafx.scene.input.KeyEvent;
  import javafx.scene.layout.AnchorPane;
 
-import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ResourceBundle;
 
 public class mainFormController implements Initializable {
 
@@ -38,9 +34,6 @@ public class mainFormController implements Initializable {
     
     @FXML
     private TableView<Order> orderTable;
-//    
-//    @FXML
-//    private TableColumn<Order, Integer> orderIdColumn;
 
     @FXML
     private TableColumn<Order, String> orderNumberColumn;
@@ -84,6 +77,12 @@ public class mainFormController implements Initializable {
     private Button order_status_btn;
     
     @FXML
+    private Button  add_show_category_service_btn;
+    
+    @FXML
+    private AnchorPane add_show_category_service_page;
+    
+    @FXML
     private AnchorPane view_order_detail;
 
     @FXML
@@ -102,7 +101,24 @@ public class mainFormController implements Initializable {
     private DatePicker datePicker;
     
     @FXML
+    private TableColumn<Category, String> catIdColumn;
+    
+    @FXML
+    private TableColumn<Category, String> categoryNameColumn;
+    
+    @FXML
     private Button resetButton;
+    
+    @FXML
+    private TextField categoryNameField;
+    
+    @FXML
+    private TextField categoryIdField;
+
+    private CategoryDAO categoryDAO;
+    
+    @FXML
+    private TableView<Category> categoryTable;
 
     private Connection connection;
 
@@ -139,6 +155,8 @@ public class mainFormController implements Initializable {
         // Set up key listener for phoneNum TextField
         phoneNum.setOnKeyReleased(this::numOnChange);
         
+        categoryDAO = new CategoryDAO();
+        
         initializeOrderTable();
 
         resetDatePicker();
@@ -149,14 +167,35 @@ public class mainFormController implements Initializable {
                 fetchOrdersForDate(selectedDate);
             }
         });
+        
+        // Load data from the database and populate the table
+        initializeCategoryTable();
+        loadCategoryDataTable();
        
         
     }
-    
+    private void initializeCategoryTable() {
+        catIdColumn.setCellValueFactory(new PropertyValueFactory<>("catid"));
+        categoryNameColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+    }
+    private void loadCategoryDataTable() {
+        try {
+            ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryDAO.getAllCategories());
+            categoryTable.setItems(categoryList);
+        } catch (SQLException e) {
+            System.err.println("Error loading categories: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void resetDatePicker() {
         datePicker.setValue(null);
         loadAllOrders();
+    }
+    
+    @FXML
+    private void handleRefresh(ActionEvent event) {
+        loadCategoryDataTable();
     }
 
     private void loadAllOrders() {
@@ -205,23 +244,42 @@ public class mainFormController implements Initializable {
             take_a_order.setVisible(false);
             view_order_detail.setVisible(false);
             order_status.setVisible(false);
+            add_show_category_service_page.setVisible(false);
+            
         } else if (event.getSource() == order_btn) {
             System.out.println("Switching to take order page.");
             dashboard_page.setVisible(false);
             take_a_order.setVisible(true);
             view_order_detail.setVisible(false);
             order_status.setVisible(false);
+            add_show_category_service_page.setVisible(false);
+            
         } else if (event.getSource() == order_detail_btn) {
             System.out.println("Switching to view order detail page.");
             dashboard_page.setVisible(false);
             take_a_order.setVisible(false);
             view_order_detail.setVisible(true);
             order_status.setVisible(false);
+            add_show_category_service_page.setVisible(false);
+            
         } else if (event.getSource() == order_status_btn) {
+
+            System.out.println("Switching to order status page");
         	dashboard_page.setVisible(false);
             take_a_order.setVisible(false);
             view_order_detail.setVisible(false);
             order_status.setVisible(true);
+            add_show_category_service_page.setVisible(false);
+            
+		}
+        else if (event.getSource() == add_show_category_service_btn) {
+
+            System.out.println("Switching to add category/service page.");
+        	dashboard_page.setVisible(false);
+            take_a_order.setVisible(false);
+            view_order_detail.setVisible(false);
+            order_status.setVisible(false);
+            add_show_category_service_page.setVisible(true);
 		}
     }
 
@@ -319,18 +377,7 @@ public class mainFormController implements Initializable {
         alert.setContentText(content);
 //        alert.showAndWait();
     }
-//    private void initializeOrderTable() {
-//        orderNumberColumn.setCellValueFactory(new PropertyValueFactory<>("orderNumber"));
-//        dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
-//        dueTimeColumn.setCellValueFactory(new PropertyValueFactory<>("dueTime"));
-//        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
-//        totalQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
-//        orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
-//
-//        ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
-//        
-//        orderTable.setItems(orders);
-//    }
+
     private void updateOrderStatusInDatabase(Order order) {
         // Assuming you have a connection to your database
         PreparedStatement preparedStatement = null;
@@ -406,6 +453,25 @@ public class mainFormController implements Initializable {
         System.out.println("Printing card...");
     }
 
+    @FXML
+    private void handleSubmit() {
+        String categoryName = categoryNameField.getText().trim();
+        String categoryId = categoryIdField.getText().trim(); 
+        if (categoryName.isEmpty() || categoryId.isEmpty()) {
+            showAlert("Error", "Category name and ID cannot be empty.");
+            return;
+        }
+
+        boolean success = categoryDAO.addCategory(categoryName, categoryId);
+        if (success) {
+            showAlert("Success", "Category added successfully.");
+            categoryNameField.clear();
+            categoryIdField.clear(); 
+        } else {
+            showAlert("Error", "Failed to add category.");
+        }
+    }
+    
     private void closeConnection() {
         if (connection != null) {
             try {

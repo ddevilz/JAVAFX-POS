@@ -22,6 +22,9 @@
     -fx-background-color: #fff;
     -fx-text-fill: #2a5178;
 }
+.category-add-form {
+    -fx-background-color: linear-gradient(to bottom, #0073e6, #ffffff);
+}
 
 .header{
     -fx-background-color: #2a5178;
