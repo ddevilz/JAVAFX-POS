@@ -26,6 +26,18 @@ public class CategoryDAO {
 	            return false;
 	        }
 	    }
+	    public boolean deleteCategory(Category category) {
+	        String query = "DELETE FROM item_category WHERE catid = ?";
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, category.getCatid());
+	            int rowsAffected = preparedStatement.executeUpdate();
+	            return rowsAffected > 0;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+
 	    
 	    public List<Category> getAllCategories() throws SQLException {
 	        List<Category> categories = new ArrayList<>();
