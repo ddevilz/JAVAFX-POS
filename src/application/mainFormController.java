@@ -6,6 +6,8 @@ import java.util.UUID;
 import javafx.fxml.Initializable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import javafx.event.ActionEvent;
@@ -23,361 +25,588 @@ import java.time.LocalDate;
 
 public class mainFormController implements Initializable {
 
-    @FXML
-    private TextField phoneNum;
+	 @FXML
+	    private TextField phoneNum;
+	    @FXML
+	    private TextField customerName;
+	    @FXML
+	    private TextField customerAddress;
 
-    @FXML
-    private TextField customerName;
+	    @FXML
+	    private TableView<Order> orderTable;
+	    @FXML
+	    private TableColumn<Order, String> orderNumberColumn;
+	    @FXML
+	    private TableColumn<Order, String> dueDateColumn;
+	    @FXML
+	    private TableColumn<Order, String> dueTimeColumn;
+	    @FXML
+	    private TableColumn<Order, String> customerColumn;
+	    @FXML
+	    private TableColumn<Order, Integer> totalQuantityColumn;
+	    @FXML
+	    private TableColumn<Order, OrderStatus> orderStatusColumn;
 
-    @FXML
-    private TextField customerAddress;
-    
-    @FXML
-    private TableView<Order> orderTable;
+	    @FXML
+	    private Button dashboard_btn;
+	    @FXML
+	    private Button order_btn;
+	    @FXML
+	    private Button order_detail_btn;
+	    @FXML
+	    private AnchorPane dashboard_page;
+	    @FXML
+	    private AnchorPane take_a_order;
+	    @FXML
+	    private AnchorPane order_status;
+	    @FXML
+	    private Button order_status_btn;
+	    @FXML
+	    private Button add_show_category_service_btn;
+	    @FXML
+	    private AnchorPane add_show_category_service_page;
+	    @FXML
+	    private AnchorPane view_order_detail;
+	    private OrderDAO orderDAO = new OrderDAO();
+	    @FXML
+	    private TableView<Customer> resultsTable;
+	    @FXML
+	    private TableColumn<Customer, String> nameColumn;
+	    @FXML
+	    private TableColumn<Customer, String> addressColumn;
+	    @FXML
+	    private TableColumn<Customer, String> phoneColumn;
 
-    @FXML
-    private TableColumn<Order, String> orderNumberColumn;
+	    @FXML
+	    private DatePicker datePicker;
 
-    @FXML
-    private TableColumn<Order, String> dueDateColumn;
+	    @FXML
+	    private TableColumn<Category, String> catIdColumn;
+	    @FXML
+	    private TableColumn<Category, String> categoryNameColumn;
+	    @FXML
+	    private Button resetButton;
+	    @FXML
+	    private TextField categoryNameField;
+	    @FXML
+	    private TextField categoryIdField;
 
-    @FXML
-    private TableColumn<Order, String> dueTimeColumn;
+	    private CategoryDAO categoryDAO;
 
-    @FXML
-    private TableColumn<Order, String> customerColumn;
+	    @FXML
+	    private TableView<Category> categoryTable;
 
-    @FXML
-    private TableColumn<Order, Integer> totalQuantityColumn;
-    
-    @FXML
-    private TableColumn<Order, OrderStatus> orderStatusColumn;
+	    @FXML
+	    private AnchorPane mainContainer;
+	    @FXML
+	    private ScrollPane categoryScrollPane;
+	    @FXML
+	    private AnchorPane categoryContainer;
+	    @FXML
+	    private ScrollPane itemScrollPane;
+	    @FXML
+	    private AnchorPane itemContainer;
+	    @FXML
+	    private TableView<Item> serviceTable;
+	    @FXML
+	    private TableColumn<Item, String> noColumn;
+	    @FXML
+	    private TableColumn<Item, String> serviceColumn;
+	    @FXML
+	    private TableColumn<Item, Double> priceColumn;
+	    @FXML
+	    private TableColumn<Item, Integer> quantity;
+	    @FXML
+	    private TableColumn<Item, Double> totalColumn;
+	    @FXML
+	    private TextField textField1;
+	    @FXML
+	    private TextField textField2;
+	    @FXML
+	    private TextField textField3;
+	    @FXML
+	    private TextField textField4;
+	    @FXML
+	    private Button backButton;
+	    @FXML
+	    private Button printReceiptButton;
+	    @FXML
+	    private Label totalAmountLabel;
+	    @FXML
+	    private TextField discountField;
+	    @FXML
+	    private TextField advancePaymentField;
+	    @FXML
+	    private Label finalAmountLabel;
+	    @FXML
+	    private Button applyDiscountButton;
+	    @FXML
+	    private Button applyAdvanceButton;
 
-    private OrderDAO orderDAO = new OrderDAO();
+	    private Connection connection;
 
-    @FXML
-    private Button dashboard_btn;
+	    @Override
+	    public void initialize(URL url, ResourceBundle resourceBundle) {
+	        System.out.println("Initializing controller...");
+	        connection = Database.connectDB();
+	        if (connection != null) {
+	            System.out.println("Database connection established.");
+	        } else {
+	            System.out.println("Failed to establish database connection.");
+	        }
 
-    @FXML
-    private Button order_btn;
+	        // Set TextField properties
+	        phoneNum.setEditable(true);
+	        customerName.setEditable(true);
+	        customerAddress.setEditable(true);
 
-    @FXML
-    private Button order_detail_btn;
+	        // Initialize Customer TableView columns
+	        nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
+	        addressColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAddress()));
+	        phoneColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPhoneNumber()));
 
-    @FXML
-    private AnchorPane dashboard_page;
+	        // Listener for row selection in Customer TableView
+	        resultsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+	            if (newValue != null) {
+	                System.out.println("Customer selected: " + newValue.getName());
+	                setCustomerDetails(newValue);
+	            }
+	        });
 
-    @FXML
-    private AnchorPane take_a_order;
-    
-    @FXML
-    private AnchorPane order_status;
+	        // Key listener for phoneNum TextField
+	        phoneNum.setOnKeyReleased(this::numOnChange);
 
-    @FXML
-    private Button order_status_btn;
-    
-    @FXML
-    private Button  add_show_category_service_btn;
-    
-    @FXML
-    private AnchorPane add_show_category_service_page;
-    
-    @FXML
-    private AnchorPane view_order_detail;
+	        // Initialize DAOs
+	        categoryDAO = new CategoryDAO();
 
-    @FXML
-    private TableView<Customer> resultsTable;
+	        // Initialize Order Table and Date Picker
+	        initializeOrderTable();
+	        resetDatePicker();
+	        datePicker.setOnAction(event -> {
+	            LocalDate selectedDate = datePicker.getValue();
+	            if (selectedDate != null) {
+	                fetchOrdersForDate(selectedDate);
+	            }
+	        });
+	        
+	        noColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getIndex())));
+	        serviceColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getServiceName()));
+	        quantity.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getQuantity()).asObject());
+	        priceColumn.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getPrice()).asObject());
+//	        totalColumn.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getTotalPrice()).asObject());
 
-    @FXML
-    private TableColumn<Customer, String> nameColumn;
+	        // Load categories and initialize Category Table
+	        loadCategories();
+	        initializeCategoryTable();
+	        loadCategoryDataTable();
+	    }
 
-    @FXML
-    private TableColumn<Customer, String> addressColumn;
+	    // Action handler for back button
+	    @FXML
+	    private void handleBackButtonAction(ActionEvent event) {
+	        categoryScrollPane.setVisible(true);
+	        itemScrollPane.setVisible(false);
+	    }
+	    
+	    
 
-    @FXML
-    private TableColumn<Customer, String> phoneColumn;
-    
-    @FXML
-    private DatePicker datePicker;
-    
-    @FXML
-    private TableColumn<Category, String> catIdColumn;
-    
-    @FXML
-    private TableColumn<Category, String> categoryNameColumn;
-    
-    @FXML
-    private Button resetButton;
-    
-    @FXML
-    private TextField categoryNameField;
-    
-    @FXML
-    private TextField categoryIdField;
+	    // Load categories from the database
+	    private void loadCategories() {
+	        ObservableList<String> categories = getCategoriesFromDB();
+	        double layoutX = 23.0;
+	        double layoutY = 14.0;
+	        double paneWidth = 135.0;
+	        double paneHeight = 139.0;
+	        double padding = 10.0;
+	        double containerWidth = categoryContainer.getPrefWidth();
 
-    private CategoryDAO categoryDAO;
-    
-    @FXML
-    private TableView<Category> categoryTable;
+	        for (String category : categories) {
+	            AnchorPane categoryPane = createCategoryPane(category, layoutX, layoutY);
+	            categoryContainer.getChildren().add(categoryPane);
 
-    private Connection connection;
+	            layoutX += paneWidth + padding;
+	            if (layoutX + paneWidth + padding > containerWidth) {
+	                layoutX = 23.0;
+	                layoutY += paneHeight + padding;
+	            }
+	        }
+	    }
 
-    private long lastKeyPressTime = 0;
-    private static final long DEBOUNCE_DELAY = 300; // milliseconds
+	    // Fetch categories from the database
+	    private ObservableList<String> getCategoriesFromDB() {
+	        ObservableList<String> categories = FXCollections.observableArrayList();
+	        String query = "SELECT category FROM item_category"; // Adjust table and column names
+	        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+	            while (rs.next()) {
+	                categories.add(rs.getString("category"));
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return categories;
+	    }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("Initializing controller...");
-        connection = Database.connectDB();
-        if (connection != null) {
-            System.out.println("Database connection established.");
-        } else {
-            System.out.println("Failed to establish database connection.");
-        }
+	    // Create category pane
+	    private AnchorPane createCategoryPane(String category, double layoutX, double layoutY) {
+	        AnchorPane pane = new AnchorPane();
+	        pane.setLayoutX(layoutX);
+	        pane.setLayoutY(layoutY);
+	        pane.setPrefHeight(139.0);
+	        pane.setPrefWidth(135.0);
+	        pane.getStyleClass().addAll("white-form", "shadow");
 
-        phoneNum.setEditable(true);
-        customerName.setEditable(true);
-        customerAddress.setEditable(true);
+	        Label label = new Label(category);
+	        label.setAlignment(javafx.geometry.Pos.CENTER);
+	        label.setPrefHeight(139.0);
+	        label.setPrefWidth(135.0);
+	        label.getStyleClass().add("category-label");
 
-        // Set up TableView columns
-        nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
-        addressColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAddress()));
-        phoneColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPhoneNumber()));
+	        pane.getChildren().add(label);
 
-        // Add listener for row selection
-        resultsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                System.out.println("Customer selected: " + newValue.getName());
-                setCustomerDetails(newValue);
-            }
-        });
+	        pane.setOnMouseClicked(event -> showServices(category));
 
-        // Set up key listener for phoneNum TextField
-        phoneNum.setOnKeyReleased(this::numOnChange);
-        
-        categoryDAO = new CategoryDAO();
-        
-        initializeOrderTable();
+	        return pane;
+	    }
+	    @FXML
+	    private void onPrintButtonClick() {
+	        Order order = new Order();
+	        order.setSno(Integer.parseInt(snoField.getText()));
+	        order.setOnum(Integer.parseInt(onumField.getText()));
+	        order.setOdate(java.sql.Date.valueOf(odateField.getValue()));
+	        order.setOtime(otimeField.getText());
+	        order.setRtype(rtypeField.getText());
+	        order.setCid(Integer.parseInt(cidField.getText()));
+	        order.setCname(cnameField.getText());
+	        order.setMobile(mobileField.getText());
+	        order.setItems(Integer.parseInt(itemsField.getText()));
+	        order.setQuans(Double.parseDouble(quansField.getText()));
+	        order.setSub(Double.parseDouble(subField.getText()));
+	        order.setDisp(Double.parseDouble(dispField.getText()));
+	        order.setDisamt(Double.parseDouble(disamtField.getText()));
+	        order.setTax(Double.parseDouble(taxField.getText()));
+	        order.setGross(Double.parseDouble(grossField.getText()));
+	        order.setRof(Double.parseDouble(rofField.getText()));
+	        order.setNet(Double.parseDouble(netField.getText()));
+	        order.setAd(Double.parseDouble(adField.getText()));
+	        order.setPby(pbyField.getText());
+	        order.setBal(Double.parseDouble(balField.getText()));
+	        order.setDtype(dtypeField.getText());
+	        order.setNop(Double.parseDouble(nopField.getText()));
+	        order.setDdate(java.sql.Date.valueOf(ddateField.getValue()));
+	        order.setDtime1(Time.valueOf(dtime1Field.getText()));
+	        order.setDtime2(dtime2Field.getText());
+	        order.setDtime3(dtime3Field.getText());
+	        order.setRemarks(remarksField.getText());
+	        order.setStatus(statusField.getText());
+	        order.setCompany(companyField.getText());
+	        order.setCash(Double.parseDouble(cashField.getText()));
+	        order.setCard(Double.parseDouble(cardField.getText()));
+	        order.setNetb(Double.parseDouble(netbField.getText()));
+	        order.setOthers(Double.parseDouble(othersField.getText()));
+	        order.setTaxp(Double.parseDouble(taxpField.getText()));
 
-        resetDatePicker();
-        
-        datePicker.setOnAction(event -> {
-            LocalDate selectedDate = datePicker.getValue();
-            if (selectedDate != null) {
-                fetchOrdersForDate(selectedDate);
-            }
-        });
-        
-        // Load data from the database and populate the table
-        initializeCategoryTable();
-        loadCategoryDataTable();
-       
-        
-    }
-    private void initializeCategoryTable() {
-        catIdColumn.setCellValueFactory(new PropertyValueFactory<>("catid"));
-        categoryNameColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
-    }
-    private void loadCategoryDataTable() {
-        try {
-            ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryDAO.getAllCategories());
-            categoryTable.setItems(categoryList);
-        } catch (SQLException e) {
-            System.err.println("Error loading categories: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-    @FXML
-    private void resetDatePicker() {
-        datePicker.setValue(null);
-        loadAllOrders();
-    }
-    
-    @FXML
-    private void handleRefresh(ActionEvent event) {
-        loadCategoryDataTable();
-    }
+	        // Handle the order object (e.g., save to database, print)
+	        System.out.println(order);
+	    }
+	    // Show services for a category
+	    private void showServices(String category) {
+	        categoryScrollPane.setVisible(false);
+	        itemScrollPane.setVisible(true);
+	        loadItems(category);
+	    }
+	    @FXML
+	    private void handleAddButtonAction(ActionEvent event) {
+	        String serviceName = textField1.getText();
+	        String priceText = textField2.getText();
+	        String quantityText = textField3.getText();
 
-    private void loadAllOrders() {
-        orderTable.getItems().clear();
-        ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
-        orderTable.setItems(orders);
-    }
-    
-    private void fetchOrdersForDate(LocalDate date) {
-        orderTable.getItems().clear();
+	        if (!isNumeric(quantityText) || !isNumeric(priceText)) {
+	            showAlert("Invalid Input", "Quantity and price must be numeric values.");
+	            return;
+	        }
 
-        String query = "SELECT * FROM orders WHERE DueDate = ?";
+	        int quantity = Integer.parseInt(quantityText);
+	        double price = Double.parseDouble(priceText);
+	        double totalPrice = price * quantity;
 
-        try (Connection connection = Database.connectDB();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        String index = String.valueOf(serviceTable.getItems().size() + 1);
+	        Item newItem = new Item(serviceName, quantity, price, totalPrice);
 
-            preparedStatement.setDate(1, java.sql.Date.valueOf(date));
+	        serviceTable.getItems().add(newItem);
+	        updateTotalAmount();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            ObservableList<Order> orders = FXCollections.observableArrayList();
-            while (resultSet.next()) {
-                int orderNumber = resultSet.getInt("orderNumber");
-                String dueDateString = resultSet.getString("DueDate");
-                LocalDate dueDate = LocalDate.parse(dueDateString);
-                String dueTime = resultSet.getTime("DueTime").toString();
-                String customer = resultSet.getString("Customer");
-                int totalQuantity = resultSet.getInt("totalQuantity");
-                String orderStatus = resultSet.getString("orderStatus");
+	        textField1.clear();
+	        textField2.clear();
+	        textField3.clear();
+	    }
 
-                Order order = new Order(orderNumber, dueDate, dueTime, customer, totalQuantity, OrderStatus.valueOf(orderStatus));
-                orders.add(order);
-            }
-            orderTable.setItems(orders);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert("Database Error", "Failed to fetch orders for the selected date.");
-        }
-    }
+	    private boolean isNumeric(String str) {
+	        return str.matches("-?\\d+(\\.\\d+)?");
+	    }
+	    private void updateTotalAmount() {
+	        double total = serviceTable.getItems().stream()
+	                .mapToDouble(Item::getTotalPrice)
+	                .sum();
+	        totalAmountLabel.setText(String.valueOf(total));
+	        updateFinalAmount();
+	    }
+
+	    @FXML
+	    private void applyDiscount(ActionEvent event) {
+	        updateFinalAmount();
+	    }
+
+	    @FXML
+	    private void applyAdvance(ActionEvent event) {
+	        updateFinalAmount();
+	    }
+
+	    private void updateFinalAmount() {
+	        double totalAmount = Double.parseDouble(totalAmountLabel.getText());
+	        double discount = discountField.getText().isEmpty() ? 0 : Double.parseDouble(discountField.getText());
+	        double advancePayment = advancePaymentField.getText().isEmpty() ? 0 : Double.parseDouble(advancePaymentField.getText());
+	        double finalAmount = totalAmount - discount - advancePayment;
+	        finalAmountLabel.setText(String.valueOf(finalAmount));
+	    }
+	    
+	    // Load items for a category from the database
+	    private void loadItems(String category) {
+	        itemContainer.getChildren().clear();
+	        ObservableList<Item> items = FXCollections.observableArrayList();
+	        String query = "SELECT iname, rate1 FROM item_master WHERE itype = ?";
+	        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+	            stmt.setString(1, category);
+	            ResultSet rs = stmt.executeQuery();
+	            double layoutX = 23.0;
+	            double layoutY = 14.0;
+	            double paneWidth = 135.0;
+	            double paneHeight = 139.0;
+	            double padding = 10.0;
+	            double containerWidth = itemContainer.getPrefWidth();
+
+	            while (rs.next()) {
+	                String iname = rs.getString("iname");
+	                double rate1 = rs.getDouble("rate1");
+	                Item item = new Item(0, iname, rate1);
+	                items.add(item);
+
+	                AnchorPane itemPane = createItemPane(item, layoutX, layoutY);
+	                itemContainer.getChildren().add(itemPane);
+
+	                layoutX += paneWidth + padding;
+	                if (layoutX + paneWidth + padding > containerWidth) {
+	                    layoutX = 23.0;
+	                    layoutY += paneHeight + padding;
+	                }
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    // Create item pane
+	    private AnchorPane createItemPane(Item item, double layoutX, double layoutY) {
+	        AnchorPane pane = new AnchorPane();
+	        pane.setLayoutX(layoutX);
+	        pane.setLayoutY(layoutY);
+	        pane.setPrefHeight(139.0);
+	        pane.setPrefWidth(135.0);
+	        pane.getStyleClass().addAll("white-form", "shadow");
+
+	        Label label = new Label(item.getServiceName() + "\nPrice: " + item.getPrice());
+	        label.setAlignment(javafx.geometry.Pos.CENTER);
+	        label.setPrefHeight(139.0);
+	        label.setPrefWidth(135.0);
+	        label.getStyleClass().add("category-label");
+
+	        pane.getChildren().add(label);
+
+	        pane.setOnMouseClicked(event -> handleItemClicked(item));
+
+	        return pane;
+	    }
+
+	    // Handle item clicked event
+	    private void handleItemClicked(Item item) {
+	        textField1.setText(item.getServiceName());
+	        textField2.setText(String.valueOf(item.getPrice()));
+	        textField3.setText(String.valueOf(1));
+	    }
+
+	    // Initialize category table
+	    private void initializeCategoryTable() {
+	        catIdColumn.setCellValueFactory(new PropertyValueFactory<>("catid"));
+	        categoryNameColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+	    }
+
+	    // Load category data into table
+	    private void loadCategoryDataTable() {
+	        try {
+	            ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryDAO.getAllCategories());
+	            categoryTable.setItems(categoryList);
+	        } catch (SQLException e) {
+	            System.err.println("Error loading categories: " + e.getMessage());
+	            e.printStackTrace();
+	        }
+	    }
+
+	    // Reset date picker and load all orders
+	    @FXML
+	    private void resetDatePicker() {
+	        datePicker.setValue(null);
+	        loadAllOrders();
+	    }
+
+	    // Handle refresh button action
+	    @FXML
+	    private void handleRefresh(ActionEvent event) {
+	        loadCategoryDataTable();
+	    }
+
+	    // Load all orders from the database
+	    private void loadAllOrders() {
+	        orderTable.getItems().clear();
+	        ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
+	        orderTable.setItems(orders);
+	    }
+
+	    // Fetch orders for a specific date
+	    private void fetchOrdersForDate(LocalDate date) {
+	        orderTable.getItems().clear();
+
+	        String query = "SELECT * FROM orders WHERE DueDate = ?";
+
+	        try (Connection connection = Database.connectDB();
+	             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+	            preparedStatement.setDate(1, java.sql.Date.valueOf(date));
+
+	            ResultSet resultSet = preparedStatement.executeQuery();
+	            ObservableList<Order> orders = FXCollections.observableArrayList();
+	            while (resultSet.next()) {
+	                int orderNumber = resultSet.getInt("orderNumber");
+	                String dueDateString = resultSet.getString("DueDate");
+	                LocalDate dueDate = LocalDate.parse(dueDateString);
+	                String dueTime = resultSet.getTime("DueTime").toString();
+	                String customer = resultSet.getString("Customer");
+	                int totalQuantity = resultSet.getInt("totalQuantity");
+	                String orderStatus = resultSet.getString("orderStatus");
+
+	                Order order = new Order(orderNumber, dueDate, dueTime, customer, totalQuantity, OrderStatus.valueOf(orderStatus));
+	                orders.add(order);
+	            }
+	            orderTable.setItems(orders);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            showAlert("Database Error", "Failed to fetch orders for the selected date.");
+	        }
+	    }
+
+	    // Key listener for phone number text field
+	    public void numOnChange(KeyEvent event) {
+	        KeyCode keyCode = event.getCode();
+	        if (keyCode == KeyCode.BACK_SPACE || event.getEventType() == KeyEvent.KEY_RELEASED) {
+	            handleBackspace();
+	        } else {
+	            String phoneNumber = phoneNum.getText().trim();
+	            if (!phoneNumber.isEmpty()) {
+	                phoneNumber += event.getCharacter();
+	                System.out.println("Phone number after debounce: " + phoneNumber);
+	                fetchCustomerDetailsByPhoneNumber(phoneNumber);
+	            } else {                
+	            	clearCustomerDetails();
+	            }
+	        }
+	    }
+
+	    // Handle backspace in phone number field
+	    private void handleBackspace() {
+	        String phoneNumber = phoneNum.getText().trim();
+	        if (!phoneNumber.isEmpty()) {
+	            phoneNumber = phoneNumber.substring(0, phoneNumber.length() - 1);
+	            System.out.println("Phone number after backspace: " + phoneNumber);
+	            fetchCustomerDetailsByPhoneNumber(phoneNumber);
+	        } else {
+	            clearCustomerDetails();
+	        }
+	    }
+
+	    // Fetch customer details by phone number
+	    private void fetchCustomerDetailsByPhoneNumber(String phoneNumber) {
+	        System.out.println("Fetching customer details for phone number: " + phoneNumber);
+	        String query = "SELECT * FROM customer WHERE mobile LIKE ?";
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, phoneNumber + "%");
+
+	            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	                ObservableList<Customer> customers = FXCollections.observableArrayList();
+	                while (resultSet.next()) {
+	                    String customerName = resultSet.getString("cname");
+	                    String customerAddress = resultSet.getString("add1");
+	                    String customerMobile = resultSet.getString("mobile");
+
+	                    customers.add(new Customer(customerName, customerAddress, customerMobile));
+	                }
+	                System.out.println("Number of customers found: " + customers.size());
+	                if (!customers.isEmpty()) {
+	                    resultsTable.setItems(customers);
+	                } else {
+	                    clearCustomerDetails();
+	                }
+	            }
+	        } catch (SQLException e) {
+	            System.err.println("SQL Exception: " + e.getMessage());
+	            e.printStackTrace();
+	        } catch (Exception ex) {
+	            System.err.println("Exception: " + ex.getMessage());
+	            ex.printStackTrace();
+	        }
+	    }
+
+	    // Set customer details in text fields
+	    private void setCustomerDetails(Customer customer) {
+	        customerName.setText(customer.getName());
+	        customerAddress.setText(customer.getAddress());
+	    }
+
+	    // Clear customer details from text fields
+	    private void clearCustomerDetails() {
+	        customerName.clear();
+	        customerAddress.clear();
+	    }
+
+	    // Show alert dialog
+	    private void showAlert(String title, String message) {
+	        Alert alert = new Alert(Alert.AlertType.ERROR);
+	        alert.setTitle(title);
+	        alert.setHeaderText(null);
+	        alert.setContentText(message);
+	        alert.showAndWait();
+	    }
+	
 
 
-    public void switchForm(ActionEvent event) {
-        System.out.println("Switching forms...");
-        if (event.getSource() == dashboard_btn) {
-            System.out.println("Switching to dashboard page.");
-            dashboard_page.setVisible(true);
-            take_a_order.setVisible(false);
-            view_order_detail.setVisible(false);
-            order_status.setVisible(false);
-            add_show_category_service_page.setVisible(false);
-            
-        } else if (event.getSource() == order_btn) {
-            System.out.println("Switching to take order page.");
-            dashboard_page.setVisible(false);
-            take_a_order.setVisible(true);
-            view_order_detail.setVisible(false);
-            order_status.setVisible(false);
-            add_show_category_service_page.setVisible(false);
-            
-        } else if (event.getSource() == order_detail_btn) {
-            System.out.println("Switching to view order detail page.");
-            dashboard_page.setVisible(false);
-            take_a_order.setVisible(false);
-            view_order_detail.setVisible(true);
-            order_status.setVisible(false);
-            add_show_category_service_page.setVisible(false);
-            
-        } else if (event.getSource() == order_status_btn) {
 
-            System.out.println("Switching to order status page");
-        	dashboard_page.setVisible(false);
-            take_a_order.setVisible(false);
-            view_order_detail.setVisible(false);
-            order_status.setVisible(true);
-            add_show_category_service_page.setVisible(false);
-            
-		}
-        else if (event.getSource() == add_show_category_service_btn) {
+//    private void setCustomerDetails(Customer customer) {
+//        System.out.println("Setting customer details: " + customer.getName());
+//        customerName.setText(customer.getName());
+//        customerAddress.setText(customer.getAddress());
+//    }
+//
+//    private void clearCustomerDetails() {
+//        System.out.println("Clearing customer details.");
+//        customerName.clear();
+//        customerAddress.clear();
+//    }
+//
+//    private void showAlert(String title, String content) {
+//        System.out.println("Showing alert: " + title + " - " + content);
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle(title);
+//        alert.setContentText(content);
+//    }
 
-            System.out.println("Switching to add category/service page.");
-        	dashboard_page.setVisible(false);
-            take_a_order.setVisible(false);
-            view_order_detail.setVisible(false);
-            order_status.setVisible(false);
-            add_show_category_service_page.setVisible(true);
-		}
-    }
-
-    public void numOnChange(KeyEvent event) {
-        KeyCode keyCode = event.getCode();
-        if (keyCode == KeyCode.BACK_SPACE || event.getEventType() == KeyEvent.KEY_RELEASED) {
-            // Handle backspace
-            handleBackspace();
-        } else {
-            // Handle regular character input
-            lastKeyPressTime = System.currentTimeMillis();
-            String phoneNumber = phoneNum.getText().trim();
-            if (!phoneNumber.isEmpty()) {
-                phoneNumber += event.getCharacter();
-                System.out.println("Phone number after debounce: " + phoneNumber);
-                fetchCustomerDetailsByPhoneNumber(phoneNumber);
-            } else {
-                clearCustomerDetails();
-            }
-        }
-    }
-
-
-    private void handleBackspace() {
-        String phoneNumber = phoneNum.getText().trim();
-        if (!phoneNumber.isEmpty()) {
-            // Remove the last character from the phone number
-            phoneNumber = phoneNumber.substring(0, phoneNumber.length() - 1);
-            System.out.println("Phone number after backspace: " + phoneNumber);
-            fetchCustomerDetailsByPhoneNumber(phoneNumber);
-        } else {
-            // If the phone number is empty, clear customer details
-            clearCustomerDetails();
-        }
-    }
-    
-    private void fetchCustomerDetailsByPhoneNumber(String phoneNumber) {
-        System.out.println("Fetching customer details for phone number: " + phoneNumber);
-        String query = "SELECT * FROM customer WHERE mobile LIKE ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            // Set the parameter value in the prepared statement
-            preparedStatement.setString(1, phoneNumber + "%");
-
-            // Print the SQL query statement
-            System.out.println("Query: " + preparedStatement.toString());
-            
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ObservableList<Customer> customers = FXCollections.observableArrayList();
-                while (resultSet.next()) {
-                    String customerName = resultSet.getString("cname");
-                    String customerAddress = resultSet.getString("add1");
-                    String customerMobile = resultSet.getString("mobile");
-                    
-                    // Print each row of the result set
-                    System.out.println("Customer Name: " + customerName + ", Address: " + customerAddress + ", Mobile: " + customerMobile);
-                    
-                    // Add the customer to the list
-                    customers.add(new Customer(customerName, customerAddress, customerMobile));
-                }
-                System.out.println("Number of customers found: " + customers.size());
-                if (!customers.isEmpty()) {
-                    resultsTable.setItems(customers);
-                } else {
-                    clearCustomerDetails();
-                }
-            }
-        } catch (SQLException e) {
-            // Handle SQL exceptions
-            System.err.println("SQL Exception: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception ex) {
-            // Handle other exceptions
-            System.err.println("Exception: " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-
-
-    private void setCustomerDetails(Customer customer) {
-        System.out.println("Setting customer details: " + customer.getName());
-        customerName.setText(customer.getName());
-        customerAddress.setText(customer.getAddress());
-    }
-
-    private void clearCustomerDetails() {
-        System.out.println("Clearing customer details.");
-        customerName.clear();
-        customerAddress.clear();
-    }
-
-    private void showAlert(String title, String content) {
-        System.out.println("Showing alert: " + title + " - " + content);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setContentText(content);
-//        alert.showAndWait();
-    }
-
+   
     private void updateOrderStatusInDatabase(Order order) {
         // Assuming you have a connection to your database
         PreparedStatement preparedStatement = null;
@@ -488,5 +717,52 @@ public class mainFormController implements Initializable {
     protected void finalize() {
         System.out.println("Finalizing controller...");
         closeConnection();
+    }
+    
+    public void switchForm(ActionEvent event) {
+        System.out.println("Switching forms...");
+        if (event.getSource() == dashboard_btn) {
+            System.out.println("Switching to dashboard page.");
+            dashboard_page.setVisible(true);
+            take_a_order.setVisible(false);
+            view_order_detail.setVisible(false);
+            order_status.setVisible(false);
+            add_show_category_service_page.setVisible(false);
+            
+        } else if (event.getSource() == order_btn) {
+            System.out.println("Switching to take order page.");
+            dashboard_page.setVisible(false);
+            take_a_order.setVisible(true);
+            view_order_detail.setVisible(false);
+            order_status.setVisible(false);
+            add_show_category_service_page.setVisible(false);
+            
+        } else if (event.getSource() == order_detail_btn) {
+            System.out.println("Switching to view order detail page.");
+            dashboard_page.setVisible(false);
+            take_a_order.setVisible(false);
+            view_order_detail.setVisible(true);
+            order_status.setVisible(false);
+            add_show_category_service_page.setVisible(false);
+            
+        } else if (event.getSource() == order_status_btn) {
+
+            System.out.println("Switching to order status page");
+        	dashboard_page.setVisible(false);
+            take_a_order.setVisible(false);
+            view_order_detail.setVisible(false);
+            order_status.setVisible(true);
+            add_show_category_service_page.setVisible(false);
+            
+		}
+        else if (event.getSource() == add_show_category_service_btn) {
+
+            System.out.println("Switching to add category/service page.");
+        	dashboard_page.setVisible(false);
+            take_a_order.setVisible(false);
+            view_order_detail.setVisible(false);
+            order_status.setVisible(false);
+            add_show_category_service_page.setVisible(true);
+		}
     }
 }
