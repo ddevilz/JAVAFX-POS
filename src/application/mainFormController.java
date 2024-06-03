@@ -157,6 +157,11 @@ public class mainFormController implements Initializable {
 	    @FXML
 	    private Button backButton;
 	    @FXML
+	    private Button submitserviceButton;
+	    
+	    @FXML
+	    private Button testButton;
+	    @FXML
 	    private Button printReceiptButton;
 	    @FXML
 	    private Label totalAmountLabel;
@@ -205,6 +210,7 @@ public class mainFormController implements Initializable {
 		phoneNum.setOnKeyReleased(this::numOnChange);
 
 		categoryDAO = new CategoryDAO();
+		  serviceDAO = new ServiceDAO();  
 
 		initializeOrderTable();
 
@@ -220,12 +226,81 @@ public class mainFormController implements Initializable {
 		// Load data from the database and populate the table
 		initializeCategoryTable();
 		loadCategoryDataTable();
+		  initializeServiceTable();
+	        loadServices();
 
+		
 	}
+	@FXML
+	private void testAction(ActionEvent event) {
+	    System.out.println("Test button clicked");
+	}
+	
+	
+	 private void initializeServiceTable() {
+	        serviceIdColumn.setCellValueFactory(new PropertyValueFactory<>("serviceId"));
+	        serviceNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+	        serviceTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+	        rate1Column.setCellValueFactory(new PropertyValueFactory<>("rate1"));
+	        rate2Column.setCellValueFactory(new PropertyValueFactory<>("rate2"));
+	        rate3Column.setCellValueFactory(new PropertyValueFactory<>("rate3"));
+	        rate4Column.setCellValueFactory(new PropertyValueFactory<>("rate4"));
+	        rate5Column.setCellValueFactory(new PropertyValueFactory<>("rate5"));
+	    }
+	
+	@FXML
+	private void handleDeleteCategory(ActionEvent event) {
+	    Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
+	    if (selectedCategory != null) {
+	        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+	        confirmationAlert.setTitle("Confirmation");
+	        confirmationAlert.setHeaderText("Delete Category");
+	        confirmationAlert.setContentText("Are you sure you want to delete this category?");
+	        
+	        Optional<ButtonType> result = confirmationAlert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	            boolean success = categoryDAO.deleteCategory(selectedCategory);
+	            if (success) {
+	                showAlert2("Success", "Category deleted successfully!");
+	                loadCategoryDataTable(); // Refresh the table view
+	            } else {
+	                showAlert("Error", "Failed to delete category. Please try again.");
+	            }
+	        }
+	    } else {
+	        showAlert("Error", "Please select a category to delete.");
+	    }
+	}
+	
+	@FXML
+	private void handleDeleteService(ActionEvent event) {
+	    Service selectedService = serviceTable.getSelectionModel().getSelectedItem();
+	    if (selectedService != null) {
+	        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+	        confirmationAlert.setTitle("Confirmation");
+	        confirmationAlert.setHeaderText("Delete Service");
+	        confirmationAlert.setContentText("Are you sure you want to delete this service?");
+	        
+	        Optional<ButtonType> result = confirmationAlert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	            boolean success = serviceDAO.deleteService(selectedService);
+	            if (success) {
+	                showAlert2("Success", "Service deleted successfully!");
+	                loadServices();
+	            } else {
+	                showAlert("Error", "Failed to delete service. Please try again.");
+	            }
+	        }
+	    } else {
+	        showAlert("Error", "Please select a service to delete.");
+	    }
+	}
+
+
 
 	private void initializeCategoryTable() {
 		catIdColumn.setCellValueFactory(new PropertyValueFactory<>("catid"));
-		categoryNameColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+		categoryNameColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));	
 	}
 
 	private void loadCategoryDataTable() {
@@ -444,26 +519,26 @@ public class mainFormController implements Initializable {
 	// alert.setTitle(title);
 	// alert.setContentText(content);
 	// }
+    private void showAlert2(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 
 	private void updateOrderStatusInDatabase(Order order) {
-		// Assuming you have a connection to your database
 		PreparedStatement preparedStatement = null;
 
 		try {
-			// Prepare the update query
 			String updateQuery = "UPDATE orders SET orderStatus = ? WHERE orderNumber = ?";
 
-			// Create a prepared statement
 			preparedStatement = connection.prepareStatement(updateQuery);
 
-			// Set the parameters
 			preparedStatement.setString(1, order.getOrderStatus().toString());
 			preparedStatement.setInt(2, order.getOrderNumber());
 
-			// Execute the update
 			int rowsAffected = preparedStatement.executeUpdate();
 
-			// Check if the update was successful
 			if (rowsAffected > 0) {
 				System.out.println("Order status updated successfully.");
 			} else {
@@ -491,25 +566,16 @@ public class mainFormController implements Initializable {
 		customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
 		totalQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
 
-		// Set cell value factory for orderStatusColumn
 		orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
-		System.out.println("hello");
-		// Set up the orderStatusColumn with a ComboBoxTableCell
 		orderStatusColumn.setCellFactory(ComboBoxTableCell.forTableColumn(OrderStatus.values()));
-		System.out.println("hello");
 
-		// Add a listener to handle the edit commit event when user selects an option
 		orderStatusColumn.setOnEditCommit(event -> {
 			TablePosition<Order, OrderStatus> position = event.getTablePosition();
 			Order order = event.getTableView().getItems().get(position.getRow());
 			OrderStatus newStatusValue = (OrderStatus) event.getNewValue();
 			order.setOrderStatus(newStatusValue);
-
-			// Now you can update the database with the new order status
 			updateOrderStatusInDatabase(order);
 		});
-		System.out.println("hello");
-		// Load orders from the database and set them to the table
 		ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
 		orderTable.setItems(orders);
 	}
@@ -529,11 +595,27 @@ public class mainFormController implements Initializable {
 
 		boolean success = categoryDAO.addCategory(categoryName, categoryId);
 		if (success) {
-			showAlert("Success", "Category added successfully.");
+			showAlert2("Success", "Category added successfully.");
 			loadCategoryDataTable();
+			clearCategoryFields();
 		} else {
 			showAlert("Error", "Failed to add category.");
 		}
+	}
+	
+	private void clearCategoryFields() {
+		categoryNameField.clear();
+		categoryIdField.clear();
+	}
+	
+	private void clearServiceFormFields() {
+	    serviceNameField.clear();
+	    serviceTypeField.clear();
+	    rate1Field.clear();
+	    rate2Field.clear();
+	    rate3Field.clear();
+	    rate4Field.clear();
+	    rate5Field.clear();
 	}
 
 	@FXML
@@ -550,8 +632,10 @@ public class mainFormController implements Initializable {
 		boolean success = serviceDAO.addService(newService);
 
 		if (success) {
-			showAlert("Success", "Service added successfully!");
+			showAlert2("Success", "Service added successfully!");
 			loadServices();
+            clearServiceFormFields();
+			
 		} else {
 			showAlert("Error", "Failed to add service. Please try again.");
 		}

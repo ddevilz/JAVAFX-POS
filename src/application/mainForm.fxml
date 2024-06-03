@@ -73,7 +73,7 @@
                <center>
                   <StackPane stylesheets="@mainFormDesign.css">
                      <children>
-                        <AnchorPane fx:id="dashboard_page" prefHeight="750.0" prefWidth="1024.0" styleClass="ordertable" stylesheets="@mainFormDesign.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="dashboard_page" prefHeight="750.0" prefWidth="1024.0" styleClass="ordertable" stylesheets="@mainFormDesign.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane prefHeight="200.0" prefWidth="992.0" stylesheets="@mainFormDesign.css" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="14.0">
                                  <styleClass>
@@ -210,7 +210,7 @@
                                           <Label layoutX="32.0" layoutY="6.0" text="Name" />
 						               </children>
 						            </AnchorPane>
-                                    <Button fx:id="backButton" layoutX="14.0" layoutY="13.0" mnemonicParsing="false" onAction="#handleBackButtonAction" text="Back" />
+                                    <Button fx:id="testButton" layoutX="14.0" layoutY="13.0" mnemonicParsing="false" onAction="#testAction" text="Back" />
 						         </children>
 						         <styleClass>
 						            <String fx:value="radius" />
@@ -292,7 +292,7 @@
                               <URL value="@mainFormDesign.css" />
                            </stylesheets>
 						</AnchorPane>
-                        <AnchorPane fx:id="add_show_category_service_page" prefHeight="720.0" prefWidth="984.0" stylesheets="@mainFormDesign.css" visible="false">
+                        <AnchorPane fx:id="add_show_category_service_page" prefHeight="720.0" prefWidth="984.0" stylesheets="@mainFormDesign.css">
                            <children>
                               <GridPane layoutX="15.0" layoutY="22.0" prefHeight="231.0" prefWidth="461.0" styleClass="radius" stylesheets="@mainFormDesign.css">
                                 <columnConstraints>
@@ -465,7 +465,7 @@
                                           <Font size="17.0" />
                                        </font>
                                     </TextField>
-                                    <Button mnemonicParsing="false" onAction="#submitServiceForm" prefHeight="42.0" prefWidth="125.0" styleClass="radius" stylesheets="@mainFormDesign.css" text="Submit" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                                    <Button fx:id="submitserviceButton" mnemonicParsing="false" onAction="#submitServiceForm" prefHeight="42.0" prefWidth="125.0" styleClass="radius" stylesheets="@mainFormDesign.css" text="Submit" GridPane.columnIndex="1" GridPane.rowIndex="8">
                                        <font>
                                           <Font size="20.0" />
                                        </font>
