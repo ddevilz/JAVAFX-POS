@@ -19,7 +19,7 @@ public class Order {
 		this.totalQuantity = totalQuantity;
 		this.orderStatus = orderStatus;
 	}
-	
+
 	public int getOrderNumber() {
 		return orderNumber;
 	}

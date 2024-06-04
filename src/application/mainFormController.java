@@ -1,8 +1,12 @@
 package application;
 
 import java.net.URL;
+import java.util.Optional;
+import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javafx.fxml.Initializable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +25,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
  import javafx.scene.layout.AnchorPane;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class mainFormController implements Initializable {
 
@@ -142,9 +149,47 @@ public class mainFormController implements Initializable {
 	    private Button applyDiscountButton;
 	    @FXML
 	    private Button applyAdvanceButton;
+	    
+	    @FXML
+	    private TextField serviceNameField;
+	    @FXML
+	    private TextField serviceTypeField;
+	    @FXML
+	    private TextField rate1Field;
+	    @FXML
+	    private TextField rate2Field;
+	    @FXML
+	    private TextField rate3Field;
+	    @FXML
+	    private TextField rate4Field;
+	    @FXML
+	    private TextField rate5Field;
 
+	    private ServiceDAO serviceDAO;
+
+		 @FXML
+		    private TableView<Service> serviceTable1;
+		    @FXML
+		    private TableColumn<Service, String> serviceIdColumn;
+		    @FXML
+		    private TableColumn<Service, String> serviceNameColumn;
+		    @FXML
+		    private TableColumn<Service, String> serviceTypeColumn;
+		    @FXML
+		    private TableColumn<Service, Double> rate1Column;
+		    @FXML
+		    private TableColumn<Service, Double> rate2Column;
+		    @FXML
+		    private TableColumn<Service, Double> rate3Column;
+		    @FXML
+		    private TableColumn<Service, Double> rate4Column;
+		    @FXML
+		    private TableColumn<Service, Double> rate5Column;
+	    
 	    private Connection connection;
-
+	    private static final AtomicInteger counter = new AtomicInteger(1000);
+	    private static final Random random = new Random();
+	    
 	    @Override
 	    public void initialize(URL url, ResourceBundle resourceBundle) {
 	        System.out.println("Initializing controller...");
@@ -178,7 +223,7 @@ public class mainFormController implements Initializable {
 
 	        // Initialize DAOs
 	        categoryDAO = new CategoryDAO();
-
+	        serviceDAO = new ServiceDAO();
 	        // Initialize Order Table and Date Picker
 	        initializeOrderTable();
 	        resetDatePicker();
@@ -198,9 +243,166 @@ public class mainFormController implements Initializable {
 	        // Load categories and initialize Category Table
 	        loadCategories();
 	        initializeCategoryTable();
-	        loadCategoryDataTable();
+	        loadCategoryDataTable(); 
+	        loadServices();
+	        initializeServiceTable();
+	    }
+	    private void initializeServiceTable() {
+	        serviceIdColumn.setCellValueFactory(new PropertyValueFactory<>("serviceId"));
+	        serviceNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+	        serviceTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+	        rate1Column.setCellValueFactory(new PropertyValueFactory<>("rate1"));
+	        rate2Column.setCellValueFactory(new PropertyValueFactory<>("rate2"));
+	        rate3Column.setCellValueFactory(new PropertyValueFactory<>("rate3"));
+	        rate4Column.setCellValueFactory(new PropertyValueFactory<>("rate4"));
+	        rate5Column.setCellValueFactory(new PropertyValueFactory<>("rate5"));
+	    }
+	    private void clearServiceFormFields() {
+		    serviceNameField.clear();
+		    serviceTypeField.clear();
+		    rate1Field.clear();
+		    rate2Field.clear();
+		    rate3Field.clear();
+		    rate4Field.clear();
+		    rate5Field.clear();
+		}
+	    @FXML
+		void submitServiceForm(ActionEvent event) {
+			String name = serviceNameField.getText();
+			String type = serviceTypeField.getText();
+			double rate1 = Double.parseDouble(rate1Field.getText());
+			double rate2 = Double.parseDouble(rate2Field.getText());
+			double rate3 = Double.parseDouble(rate3Field.getText());
+			double rate4 = Double.parseDouble(rate4Field.getText());
+			double rate5 = Double.parseDouble(rate5Field.getText());
+
+			Service newService = new Service(null, name, type, rate1, rate2, rate3, rate4, rate5);
+			boolean success = serviceDAO.addService(newService);
+
+			if (success) {
+				showAlert2("Success", "Service added successfully!");
+				loadServices();
+	            clearServiceFormFields();
+				
+			} else {
+				showAlert("Error", "Failed to add service. Please try again.");
+			}
+		}
+	
+	    @FXML
+		private void handleDeleteCategory(ActionEvent event) {
+		    Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
+		    if (selectedCategory != null) {
+		        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+		        confirmationAlert.setTitle("Confirmation");
+		        confirmationAlert.setHeaderText("Delete Category");
+		        confirmationAlert.setContentText("Are you sure you want to delete this category?");
+		        
+		        Optional<ButtonType> result = confirmationAlert.showAndWait();
+		        if (result.isPresent() && result.get() == ButtonType.OK) {
+		            boolean success = categoryDAO.deleteCategory(selectedCategory);
+		            if (success) {
+		                showAlert2("Success", "Category deleted successfully!");
+		                loadCategoryDataTable(); // Refresh the table view
+		            } else {
+		                showAlert("Error", "Failed to delete category. Please try again.");
+		            }
+		        }
+		    } else {
+		        showAlert("Error", "Please select a category to delete.");
+		    }
+		}
+	    private void showAlert2(String title, String content) {
+	        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+	        alert.setTitle(title);
+	        alert.setContentText(content);
+	        alert.showAndWait();
+	    }
+		@FXML
+		private void handleDeleteService(ActionEvent event) {
+		    Service selectedService = serviceTable1.getSelectionModel().getSelectedItem();
+		    if (selectedService != null) {
+		        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+		        confirmationAlert.setTitle("Confirmation");
+		        confirmationAlert.setHeaderText("Delete Service");
+		        confirmationAlert.setContentText("Are you sure you want to delete this service?");
+		        
+		        Optional<ButtonType> result = confirmationAlert.showAndWait();
+		        if (result.isPresent() && result.get() == ButtonType.OK) {
+		            boolean success = serviceDAO.deleteService(selectedService);
+		            if (success) {
+		                showAlert2("Success", "Service deleted successfully!");
+		                loadServices();
+		            } else {
+		                showAlert("Error", "Failed to delete service. Please try again.");
+		            }
+		        }
+		    } else {
+		        showAlert("Error", "Please select a service to delete.");
+		    }
+		}
+		private void loadServices() {
+	        try {
+	            ObservableList<Service> services = FXCollections.observableArrayList(serviceDAO.getAllServices());
+	            serviceTable1.setItems(services);
+	        } catch (SQLException e) {
+	        	 System.err.println("Error loading Service: " + e.getMessage());
+	            e.printStackTrace();
+	        }
 	    }
 
+
+		private void initializeCategoryTable() {
+			catIdColumn.setCellValueFactory(new PropertyValueFactory<>("catid"));
+			categoryNameColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));	
+		}
+
+		private void loadCategoryDataTable() {
+			try {
+				ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryDAO.getAllCategories());
+				categoryTable.setItems(categoryList);
+			} catch (SQLException e) {
+				System.err.println("Error loading categories: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		
+
+		// Fetch orders for a specific date
+		private void fetchOrdersForDate(LocalDate date) {
+			orderTable.getItems().clear();
+
+			String query = "SELECT * FROM orders WHERE DueDate = ?";
+
+			try (Connection connection = Database.connectDB();
+					PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setDate(1, java.sql.Date.valueOf(date));
+
+				ResultSet resultSet = preparedStatement.executeQuery();
+				ObservableList<Order> orders = FXCollections.observableArrayList();
+				while (resultSet.next()) {
+					int orderNumber = resultSet.getInt("orderNumber");
+					String dueDateString = resultSet.getString("DueDate");
+					LocalDate dueDate = LocalDate.parse(dueDateString);
+					String dueTime = resultSet.getTime("DueTime").toString();
+					String customer = resultSet.getString("Customer");
+					int totalQuantity = resultSet.getInt("totalQuantity");
+					String orderStatus = resultSet.getString("orderStatus");
+
+					Order order = new Order(orderNumber, dueDate, dueTime, customer, totalQuantity,
+							OrderStatus.valueOf(orderStatus));
+					orders.add(order);
+				}
+				orderTable.setItems(orders);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				showAlert("Database Error", "Failed to fetch orders for the selected date.");
+			}
+		}
+
+	    
 	    // Action handler for back button
 	    @FXML
 	    private void handleBackButtonAction(ActionEvent event) {
@@ -267,52 +469,181 @@ public class mainFormController implements Initializable {
 
 	        return pane;
 	    }
-	    @FXML
-	    private void onPrintButtonClick() {
-	        Order order = new Order();
-	        order.setSno(Integer.parseInt(snoField.getText()));
-	        order.setOnum(Integer.parseInt(onumField.getText()));
-	        order.setOdate(java.sql.Date.valueOf(odateField.getValue()));
-	        order.setOtime(otimeField.getText());
-	        order.setRtype(rtypeField.getText());
-	        order.setCid(Integer.parseInt(cidField.getText()));
-	        order.setCname(cnameField.getText());
-	        order.setMobile(mobileField.getText());
-	        order.setItems(Integer.parseInt(itemsField.getText()));
-	        order.setQuans(Double.parseDouble(quansField.getText()));
-	        order.setSub(Double.parseDouble(subField.getText()));
-	        order.setDisp(Double.parseDouble(dispField.getText()));
-	        order.setDisamt(Double.parseDouble(disamtField.getText()));
-	        order.setTax(Double.parseDouble(taxField.getText()));
-	        order.setGross(Double.parseDouble(grossField.getText()));
-	        order.setRof(Double.parseDouble(rofField.getText()));
-	        order.setNet(Double.parseDouble(netField.getText()));
-	        order.setAd(Double.parseDouble(adField.getText()));
-	        order.setPby(pbyField.getText());
-	        order.setBal(Double.parseDouble(balField.getText()));
-	        order.setDtype(dtypeField.getText());
-	        order.setNop(Double.parseDouble(nopField.getText()));
-	        order.setDdate(java.sql.Date.valueOf(ddateField.getValue()));
-	        order.setDtime1(Time.valueOf(dtime1Field.getText()));
-	        order.setDtime2(dtime2Field.getText());
-	        order.setDtime3(dtime3Field.getText());
-	        order.setRemarks(remarksField.getText());
-	        order.setStatus(statusField.getText());
-	        order.setCompany(companyField.getText());
-	        order.setCash(Double.parseDouble(cashField.getText()));
-	        order.setCard(Double.parseDouble(cardField.getText()));
-	        order.setNetb(Double.parseDouble(netbField.getText()));
-	        order.setOthers(Double.parseDouble(othersField.getText()));
-	        order.setTaxp(Double.parseDouble(taxpField.getText()));
+	   
+	    private void insertOrderIntoDatabase(OrderNow order) {
+	        String query = "INSERT INTO laundry.order1 (onum, odate, otime, rtype, cid, cname, mobile, address, items, quans, sub, disp, disamt, tax, gross, rof, net, ad, pby, bal, dtype, nop, ddate, dtime1, dtime2, dtime3, remarks, status, company, cash, card, netb, others, taxp, sno) " +
+	                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	        String queryCheck = "SELECT COUNT(*) FROM laundry.customer WHERE mobile = ?";
+	        String queryInsertCustomer = "INSERT INTO laundry.customer (mobile, cname, address) VALUES (?, ?, ?)";
+	        
+	        try (Connection connection = Database.connectDB();
+	        		 PreparedStatement stmtCheck = connection.prepareStatement(queryCheck);
+	                 PreparedStatement stmtInsertCustomer = connection.prepareStatement(queryInsertCustomer);
+		             PreparedStatement stmt = connection.prepareStatement(query)) {
+	            	
+	        	 connection.setAutoCommit(false);
+	        	
+	        	 stmtCheck.setString(1, order.getMobile());
+	             ResultSet rs = stmtCheck.executeQuery();
+	             rs.next();
+	             int count = rs.getInt(1);
 
-	        // Handle the order object (e.g., save to database, print)
-	        System.out.println(order);
+	             if (count == 0) {
+	                 stmtInsertCustomer.setString(1, order.getMobile());
+	                 stmtInsertCustomer.setString(2, order.getCname());
+	                 stmtInsertCustomer.setString(3, order.getAddress());
+	                 stmtInsertCustomer.executeUpdate();
+	             }
+	        	
+	            stmt.setInt(1, order.getOnum());
+	            stmt.setDate(2, java.sql.Date.valueOf(order.getOdate()));
+	            stmt.setString(3, order.getOtime());
+	            stmt.setString(4, order.getRtype());
+	            stmt.setInt(5, order.getCid());
+	            stmt.setString(6, order.getCname());
+	            stmt.setString(7, order.getMobile());
+	            stmt.setString(8, order.getAddress());
+	            stmt.setInt(9, order.getItems());
+	            stmt.setDouble(10, order.getQuans());
+	            stmt.setDouble(11, order.getSub());
+	            stmt.setDouble(12, order.getDisp());
+	            stmt.setDouble(13, order.getDisamt());
+	            stmt.setDouble(14, order.getTax());
+	            stmt.setDouble(15, order.getGross());
+	            stmt.setDouble(16, order.getRof());
+	            stmt.setDouble(17, order.getNet());
+	            stmt.setDouble(18, order.getAd());
+	            stmt.setString(19, order.getPby());
+	            stmt.setDouble(20, order.getBal());
+	            stmt.setString(21, order.getDtype());
+	            stmt.setDouble(22, order.getNop());
+	            stmt.setDate(23, (Date) order.getDdate());
+	            stmt.setTime(24, (Time) order.getDtime1());
+	            stmt.setString(25, order.getDtime2());
+	            stmt.setString(26, order.getDtime3());
+	            stmt.setString(27, order.getRemarks());
+	            stmt.setString(28, order.getStatus());
+	            stmt.setString(29, order.getCompany());
+	            stmt.setDouble(30, order.getCash());
+	            stmt.setDouble(31, order.getCard());
+	            stmt.setDouble(32, order.getNetb());
+	            stmt.setDouble(33, order.getOthers());
+	            stmt.setDouble(34, order.getTaxp());
+	            stmt.setInt(35, order.getSno());
+	            
+	            stmt.executeUpdate();
+	            System.out.println("Order inserted successfully!");
+	            generateReceipt(order);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            try {
+	                if (connection != null) {
+	                    connection.rollback(); 
+	                }
+	            } catch (SQLException ex) {
+	                ex.printStackTrace();
+	            }
+	        } finally {
+	            try {
+	                if (connection != null) {
+	                    connection.setAutoCommit(true); 
+	                }
+	            } catch (SQLException ex) {
+	                ex.printStackTrace();
+	            }
+	        }
 	    }
+	    
+	    private void generateReceipt(OrderNow order) {
+			
+			
+		}
+		@FXML
+	    private void onPrintButtonClick() {
+	        // Collect customer details
+	        String phone = phoneNum.getText();
+	        String name = customerName.getText();
+	        String address = customerAddress.getText();
+	        
+	        // Collect order details
+	        ObservableList<Item> items = serviceTable.getItems();
+	        int totalItems = items.size();
+	        double totalQuantity = items.stream().mapToDouble(Item::getQuantity).sum();
+	        double subTotal = items.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
+	        
+	        // Collect payment details
+	        double discount = Double.parseDouble(discountField.getText());
+	        double advancePayment = Double.parseDouble(advancePaymentField.getText());
+	        double finalAmount = Double.parseDouble(finalAmountLabel.getText().replace("$", ""));
+	        
+	        // Calculate other payment details
+	        double discountAmount = (discount / 100) * subTotal;
+	        double grossAmount = subTotal - discountAmount;
+	        double netAmount = grossAmount - advancePayment;
+
+	        // Create order object
+	        OrderNow order = new OrderNow();
+	        order.setSno(generateOrderNumber());
+	        order.setCname(name);
+	        order.setMobile(phone);
+	        order.setRtype("rate-1");
+	        order.setItems(totalItems);
+	        order.setQuans(totalQuantity);
+	        order.setSub(subTotal);
+	        order.setDisp(discount);
+	        order.setDisamt(discountAmount);
+	        order.setGross(grossAmount);
+	        order.setNet(netAmount);
+	        order.setAd(advancePayment);
+	        order.setDtype("Normal");
+	        order.setRemarks("N/A"); 
+	        order.setStatus("Pending");
+	        order.setCompany("Your Company Name"); // Set your company name
+	        order.setCash(0); 
+	        order.setCard(0); 
+	        order.setNetb(netAmount); 
+	        order.setOthers(0); 
+	        order.setTaxp(0); 
+	        order.setAddress(address);
+	        // Additional fields can be set as needed
+	        order.setOnum(generateOrderNumber()); // Implement a method to generate order number
+	        LocalDateTime now = LocalDateTime.now();
+	        order.setOdate(now.toLocalDate()); 
+	        order.setOtime(now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+	        
+	        // Print or save the order
+	        insertOrderIntoDatabase(order);
+	        System.out.println(order.toString());
+	        clearInputs();
+	    }
+	    
+	    private int generateOrderNumber() {
+	        int randomNum = 1000 + random.nextInt(9000); 
+	        return counter.getAndIncrement() * 10000 + randomNum;
+	    }
+	    
 	    // Show services for a category
 	    private void showServices(String category) {
 	        categoryScrollPane.setVisible(false);
 	        itemScrollPane.setVisible(true);
 	        loadItems(category);
+	    }
+	    
+	    private void clearInputs() {
+	        // Clear text fields
+	        phoneNum.setText("");
+	        customerName.setText("");
+	        customerAddress.setText("");
+	        discountField.setText("0");
+	        advancePaymentField.setText("0");
+
+	        // Clear table
+	        serviceTable.getItems().clear();
+	        resultsTable.getItems().clear();
+	        
+	        // Reset labels
+	        totalAmountLabel.setText("0.00");
+	        finalAmountLabel.setText("0.00");
 	    }
 	    @FXML
 	    private void handleAddButtonAction(ActionEvent event) {
@@ -433,22 +764,7 @@ public class mainFormController implements Initializable {
 	        textField3.setText(String.valueOf(1));
 	    }
 
-	    // Initialize category table
-	    private void initializeCategoryTable() {
-	        catIdColumn.setCellValueFactory(new PropertyValueFactory<>("catid"));
-	        categoryNameColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
-	    }
-
-	    // Load category data into table
-	    private void loadCategoryDataTable() {
-	        try {
-	            ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryDAO.getAllCategories());
-	            categoryTable.setItems(categoryList);
-	        } catch (SQLException e) {
-	            System.err.println("Error loading categories: " + e.getMessage());
-	            e.printStackTrace();
-	        }
-	    }
+	  
 
 	    // Reset date picker and load all orders
 	    @FXML
@@ -470,37 +786,7 @@ public class mainFormController implements Initializable {
 	        orderTable.setItems(orders);
 	    }
 
-	    // Fetch orders for a specific date
-	    private void fetchOrdersForDate(LocalDate date) {
-	        orderTable.getItems().clear();
-
-	        String query = "SELECT * FROM orders WHERE DueDate = ?";
-
-	        try (Connection connection = Database.connectDB();
-	             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-	            preparedStatement.setDate(1, java.sql.Date.valueOf(date));
-
-	            ResultSet resultSet = preparedStatement.executeQuery();
-	            ObservableList<Order> orders = FXCollections.observableArrayList();
-	            while (resultSet.next()) {
-	                int orderNumber = resultSet.getInt("orderNumber");
-	                String dueDateString = resultSet.getString("DueDate");
-	                LocalDate dueDate = LocalDate.parse(dueDateString);
-	                String dueTime = resultSet.getTime("DueTime").toString();
-	                String customer = resultSet.getString("Customer");
-	                int totalQuantity = resultSet.getInt("totalQuantity");
-	                String orderStatus = resultSet.getString("orderStatus");
-
-	                Order order = new Order(orderNumber, dueDate, dueTime, customer, totalQuantity, OrderStatus.valueOf(orderStatus));
-	                orders.add(order);
-	            }
-	            orderTable.setItems(orders);
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            showAlert("Database Error", "Failed to fetch orders for the selected date.");
-	        }
-	    }
+	    
 
 	    // Key listener for phone number text field
 	    public void numOnChange(KeyEvent event) {
@@ -511,7 +797,7 @@ public class mainFormController implements Initializable {
 	            String phoneNumber = phoneNum.getText().trim();
 	            if (!phoneNumber.isEmpty()) {
 	                phoneNumber += event.getCharacter();
-	                System.out.println("Phone number after debounce: " + phoneNumber);
+	               
 	                fetchCustomerDetailsByPhoneNumber(phoneNumber);
 	            } else {                
 	            	clearCustomerDetails();
@@ -524,7 +810,7 @@ public class mainFormController implements Initializable {
 	        String phoneNumber = phoneNum.getText().trim();
 	        if (!phoneNumber.isEmpty()) {
 	            phoneNumber = phoneNumber.substring(0, phoneNumber.length() - 1);
-	            System.out.println("Phone number after backspace: " + phoneNumber);
+	           
 	            fetchCustomerDetailsByPhoneNumber(phoneNumber);
 	        } else {
 	            clearCustomerDetails();
@@ -533,7 +819,7 @@ public class mainFormController implements Initializable {
 
 	    // Fetch customer details by phone number
 	    private void fetchCustomerDetailsByPhoneNumber(String phoneNumber) {
-	        System.out.println("Fetching customer details for phone number: " + phoneNumber);
+	        
 	        String query = "SELECT * FROM customer WHERE mobile LIKE ?";
 	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 	            preparedStatement.setString(1, phoneNumber + "%");
@@ -547,7 +833,7 @@ public class mainFormController implements Initializable {
 
 	                    customers.add(new Customer(customerName, customerAddress, customerMobile));
 	                }
-	                System.out.println("Number of customers found: " + customers.size());
+	                
 	                if (!customers.isEmpty()) {
 	                    resultsTable.setItems(customers);
 	                } else {
@@ -567,6 +853,7 @@ public class mainFormController implements Initializable {
 	    private void setCustomerDetails(Customer customer) {
 	        customerName.setText(customer.getName());
 	        customerAddress.setText(customer.getAddress());
+	        phoneNum.setText(customer.getPhoneNumber());
 	    }
 
 	    // Clear customer details from text fields
@@ -584,27 +871,6 @@ public class mainFormController implements Initializable {
 	        alert.showAndWait();
 	    }
 	
-
-
-
-//    private void setCustomerDetails(Customer customer) {
-//        System.out.println("Setting customer details: " + customer.getName());
-//        customerName.setText(customer.getName());
-//        customerAddress.setText(customer.getAddress());
-//    }
-//
-//    private void clearCustomerDetails() {
-//        System.out.println("Clearing customer details.");
-//        customerName.clear();
-//        customerAddress.clear();
-//    }
-//
-//    private void showAlert(String title, String content) {
-//        System.out.println("Showing alert: " + title + " - " + content);
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle(title);
-//        alert.setContentText(content);
-//    }
 
    
     private void updateOrderStatusInDatabase(Order order) {
@@ -654,12 +920,9 @@ public class mainFormController implements Initializable {
         customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
         totalQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
         
-        // Set cell value factory for orderStatusColumn
         orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
-        System.out.println("hello");
         // Set up the orderStatusColumn with a ComboBoxTableCell
         orderStatusColumn.setCellFactory(ComboBoxTableCell.forTableColumn(OrderStatus.values()));
-        System.out.println("hello");
 
         // Add a listener to handle the edit commit event when user selects an option
         orderStatusColumn.setOnEditCommit(event -> {
@@ -671,8 +934,7 @@ public class mainFormController implements Initializable {
             // Now you can update the database with the new order status
             updateOrderStatusInDatabase(order);
         });
-        System.out.println("hello");
-        // Load orders from the database and set them to the table
+
         ObservableList<Order> orders = FXCollections.observableArrayList(orderDAO.getOrders());
         orderTable.setItems(orders);
     }
@@ -683,23 +945,28 @@ public class mainFormController implements Initializable {
     }
 
     @FXML
-    private void handleSubmit() {
-        String categoryName = categoryNameField.getText().trim();
-        String categoryId = categoryIdField.getText().trim(); 
-        if (categoryName.isEmpty() || categoryId.isEmpty()) {
-            showAlert("Error", "Category name and ID cannot be empty.");
-            return;
-        }
+	private void handleSubmit() {
+		String categoryName = categoryNameField.getText().trim();
+		String categoryId = categoryIdField.getText().trim();
+		if (categoryName.isEmpty() || categoryId.isEmpty()) {
+			showAlert("Error", "Category name and ID cannot be empty.");
+			return;
+		}
 
-        boolean success = categoryDAO.addCategory(categoryName, categoryId);
-        if (success) {
-            showAlert("Success", "Category added successfully.");
-            categoryNameField.clear();
-            categoryIdField.clear(); 
-        } else {
-            showAlert("Error", "Failed to add category.");
-        }
-    }
+		boolean success = categoryDAO.addCategory(categoryName, categoryId);
+		if (success) {
+			showAlert2("Success", "Category added successfully.");
+			loadCategoryDataTable();
+			clearCategoryFields();
+		} else {
+			showAlert("Error", "Failed to add category.");
+		}
+	}
+    
+    private void clearCategoryFields() {
+		categoryNameField.clear();
+		categoryIdField.clear();
+	}
     
     private void closeConnection() {
         if (connection != null) {

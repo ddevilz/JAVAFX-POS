@@ -5,9 +5,7 @@ public class Category {
 	 private  String catid;
      private  String categoryName;
      
-     
-     
-     
+    
 	public Category(String catid, String categoryName) {
 		this.catid = catid;
 		this.categoryName = categoryName;
@@ -26,5 +24,4 @@ public class Category {
 		this.categoryName = categoryName;
 	}
      
-
 }

@@ -11,12 +11,12 @@ public class OrderDAO {
 	private Connection connection;
 
     public OrderDAO() {
-        this.connection = Database.connectDB(); // Assume Database.connectDB() establishes the connection
+        this.connection = Database.connectDB(); 
     }
 
     public List<Order> getOrders() {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT * FROM orders"; // Replace with your actual table name and query
+        String query = "SELECT * FROM orders"; 
 
         try (Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(query)) {
@@ -31,7 +31,7 @@ public class OrderDAO {
                    String statusFromDatabase = rs.getString("orderStatus");
                    OrderStatus orderStatus = OrderStatus.valueOf(statusFromDatabase.toUpperCase());
 
-
+                   
                    orders.add(new Order(orderNumber, dueDate, dueTime, customer, totalQuantity, orderStatus));
                }
            } catch (SQLException e) {

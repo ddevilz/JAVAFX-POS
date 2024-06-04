@@ -68,7 +68,7 @@ public class Item {
     }
 
     public char[] getIndex() {
-        String indexString = "ABC123";
+        String indexString = "1";
         return indexString.toCharArray();
     }
 }

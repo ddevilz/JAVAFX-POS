@@ -11,7 +11,7 @@ public class CategoryDAO {
 	    public CategoryDAO() {
 	        connection = Database.connectDB();
 	    }
-
+	    
 	    public boolean addCategory(String categoryName, String categoryId) {
 	        String query = "INSERT INTO item_category (category, catid) VALUES (?, ?)";
 	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -37,9 +37,19 @@ public class CategoryDAO {
 	                String categoryId = resultSet.getString("catid");
 	                categories.add(new Category(categoryId, categoryName));
 	            }
-	        }
+	        } 
 	        return categories;
 	    }
 
-
+	    public boolean deleteCategory(Category category) {
+	        String query = "DELETE FROM item_category WHERE catid = ?";
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, category.getCatid());
+	            int rowsAffected = preparedStatement.executeUpdate();
+	            return rowsAffected > 0;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
 }
